@@ -1,69 +1,50 @@
-# React + TypeScript + Vite
+# Humanity Simulator
+## I see humans, but no humanity.
+-- 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to Humanity Simulator, a dynamic and interactive web-based world where characters with distinct personalities and social standings come to life. This project is a complete reimagining of the original concept, built from the ground up with a modern tech stack to create a visually stunning and engaging user experience.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## The Idea 💡
 
-## Expanding the ESLint configuration
+It will be an interactive simulation where you can observe and influence a small society of characters. Unlike its predecessor, this version will be on the web, featuring a beautiful and intuitive interface. The core of the experience will be the ability to interact directly with the characters. Imagine a world where you can click on any person to see their current emotions, what they are carrying in their inventory, and witness their stories unfold.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## The Characters 🧍
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+Our world is populated by three distinct types of characters, each with their own motivations and behaviors:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+### **The Poor**
+These are humble individuals, often struggling to get by. They can be found wandering the world, sometimes finding lost items or receiving alms from others. Their lives are a constant struggle, but they are resilient.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### **The Rich**
+The elite of this world, the Rich are powerful and influential. They have the means to hire lackeys, acquire valuable items, and even decide the fate of others. Their actions are driven by a desire to maintain and grow their wealth and power.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### **The Robber**
+Living in the shadows, the Robbers are opportunistic and dangerous. They may steal from the unsuspecting or even resort to violence. They can also be hired by the Rich to do their dirty work, adding a layer of intrigue and danger to the world.
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+And several others still to be added.
+---
+
+## Planned Features ✨
+
+- **Beautiful Visuals:** A complete visual overhaul from the original text-based version. Expect a vibrant and aesthetically pleasing world.
+- **Direct Interaction:** Click on any character to bring up a detailed view of their current state, including:
+    - **Emotions:** See if a character is happy, sad, angry, or scared.
+    - **Inventory:** Look inside their pockets and see what items they are carrying.
+- **Dynamic Storytelling:** Watch as the characters interact with each other, creating emergent narratives of kindness, betrayal, and survival.
+
+---
+
+## Tech Stack 🛠️
+
+This project will be built using a modern and powerful set of technologies to ensure a smooth and responsive experience:
+
+-   **Backend:** Flask, Node.js
+-   **Frontend:** React, TypeScript, Vite
+-   **Styling:** Tailwind CSS
+
+---
+
