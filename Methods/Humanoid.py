@@ -9,6 +9,6 @@ class Humanoid:
         self.inventory: Inventory = Inventory()
 
 
-    def act(self):
-        print(f"{self.name} está miando.")
+    def act(self) -> str:
+        return f"{self.name} is meowing."
 
