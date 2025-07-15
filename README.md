@@ -1,50 +1,38 @@
 # Humanity Simulator
-## I see humans, but no humanity.
--- 
-
-Welcome to Humanity Simulator, a dynamic and interactive web-based world where characters with distinct personalities and social standings come to life. This project is a complete reimagining of the original concept, built from the ground up with a modern tech stack to create a visually stunning and engaging user experience.
-
+## The flesh is willing, but the soul has rotted.
 ---
 
-## The Idea 💡
+This is Humanity Simulator, a sealed digital ecosystem where programmed entities, stripped of all that defines humanity, play out their grim, looping existence. This project is a web-based reimagining of the original Java simulation, built from the ground up to be a stark observation chamber for a society spiraling into the abyss.
 
-It will be an interactive simulation where you can observe and influence a small society of characters. Unlike its predecessor, this version will be on the web, featuring a beautiful and intuitive interface. The core of the experience will be the ability to interact directly with the characters. Imagine a world where you can click on any person to see their current emotions, what they are carrying in their inventory, and witness their stories unfold.
-
----
-
-## The Characters 🧍
-
-Our world is populated by three distinct types of characters, each with their own motivations and behaviors:
-
-### **The Poor**
-These are humble individuals, often struggling to get by. They can be found wandering the world, sometimes finding lost items or receiving alms from others. Their lives are a constant struggle, but they are resilient.
-
-### **The Rich**
-The elite of this world, the Rich are powerful and influential. They have the means to hire lackeys, acquire valuable items, and even decide the fate of others. Their actions are driven by a desire to maintain and grow their wealth and power.
-
-### **The Robber**
-Living in the shadows, the Robbers are opportunistic and dangerous. They may steal from the unsuspecting or even resort to violence. They can also be hired by the Rich to do their dirty work, adding a layer of intrigue and danger to the world.
-
-And several others still to be added.
----
-
-## Planned Features ✨
-
-- **Beautiful Visuals:** A complete visual overhaul from the original text-based version. Expect a vibrant and aesthetically pleasing world.
-- **Direct Interaction:** Click on any character to bring up a detailed view of their current state, including:
-    - **Emotions:** See if a character is happy, sad, angry, or scared.
-    - **Inventory:** Look inside their pockets and see what items they are carrying.
-- **Dynamic Storytelling:** Watch as the characters interact with each other, creating emergent narratives of kindness, betrayal, and survival.
+As a silent observer, your access grants you the ability to monitor a small, contained populace. There is no goal, no victory. You can intrude upon any subject, seeing their state of being at your leisure. Peer into their fleeting emotional states, catalog the meager contents of their pockets, and watch the inevitable, grim narratives of their lives unfold. You do not influence; you merely watch the decay.
 
 ---
+## The Cast
 
-## Tech Stack 🛠️
+Our world is populated by a predetermined caste system, each fulfilling their bleak function.
 
-This project will be built using a modern and powerful set of technologies to ensure a smooth and responsive experience:
+### **The Subjugated**
+The dregs of this world, born into a cycle of futility. They wander aimlessly, scrounging for scraps or subsisting on the fleeting, calculated charity of their betters. Their existence is a testament to systemic failure, a constant, losing battle against programmed obsolescence.
 
--   **Backend:** Flask, Node.js
--   **Frontend:** React, TypeScript, Vite
--   **Styling:** Tailwind CSS
+### **The Elite**
+The architects of the system's misery. They are bloated with resources and wield absolute control. They deploy their underlings, hoard all that is valuable, and hold the power of life and termination over the masses. Their every action is a calculated move to consolidate their power and widen the chasm of inequality.
+
+### **The Predators**
+A symptom of the rot, the Predators thrive in the shadows cast by the Elite. They are instruments of brutal, opportunistic violence, preying on the weak. When not serving their own desperate ends, they are the cudgel wielded by the Elite to enforce their will, a constant, physical threat in a world of pervasive dread.
 
 ---
+## Features
 
+* **Subject Analysis:** Select any entity to access a live feed of their internal state:
+    * **Emotional Spectrum:** Monitor their crude emotional outputs—fear, rage, despair.
+    * **Inventory Audit:** Expose the contents of their person, revealing their pathetic attachments and tools for survival.
+* **Emergent Trajectories:** Observe as the entities interact, their programming leading to predictable patterns of betrayal, violence, and fleeting, pointless alliances. Witness the raw, unguided mechanics of a society collapsing under its own weight.
+
+---
+## Tech Stack
+
+This system is constructed with the following components:
+
+* **Backend:** Flask, Node.js
+* **Frontend:** React, TypeScript, Vite
+* **Styling:** Tailwind CSS
