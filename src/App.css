@@ -49,3 +49,9 @@
 .eventBox:last-child {
   margin: 10%;
 }
+.eventBox p:first-of-type {
+  background-color: #2d4768;
+}
+.eventBox:first-child {
+  background-color: #31aa86;
+}

@@ -6,7 +6,7 @@ import './App.css'
 function EventBox() {
 
     const [dialogues, setDialogues] = useState<string[]>([
-        'Lorem ipsum sit amet',
+        'Welcome to Humanity Simulator.',
     ]);
 
     const scrollContainerRef = useRef(null);
