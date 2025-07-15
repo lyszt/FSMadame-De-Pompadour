@@ -11,13 +11,13 @@ As a silent observer, your access grants you the ability to monitor a small, con
 
 Our world is populated by a predetermined caste system, each fulfilling their bleak function.
 
-### **The Subjugated**
+### **The Poor**
 The dregs of this world, born into a cycle of futility. They wander aimlessly, scrounging for scraps or subsisting on the fleeting, calculated charity of their betters. Their existence is a testament to systemic failure, a constant, losing battle against programmed obsolescence.
 
-### **The Elite**
+### **The Rich**
 The architects of the system's misery. They are bloated with resources and wield absolute control. They deploy their underlings, hoard all that is valuable, and hold the power of life and termination over the masses. Their every action is a calculated move to consolidate their power and widen the chasm of inequality.
 
-### **The Predators**
+### **The Robbers**
 A symptom of the rot, the Predators thrive in the shadows cast by the Elite. They are instruments of brutal, opportunistic violence, preying on the weak. When not serving their own desperate ends, they are the cudgel wielded by the Elite to enforce their will, a constant, physical threat in a world of pervasive dread.
 
 ---
