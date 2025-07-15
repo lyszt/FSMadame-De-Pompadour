@@ -1,20 +1,19 @@
+import json
 import typing
 
 from Methods.Poor import Poor
 # Essentials
-from flask import Flask, render_template
-
+from flask import Flask, render_template, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/action": {"origins": "http://localhost:5173"}})
 
 def performSimulation():
     Robson: Poor = Poor(name='Robson', age=50, net_worth=0)
-    final_html: str = ""
-    for i in range(5):
-        final_html += f"{Robson.act()} <br>"
-    return render_template("index.html", final_html=final_html)
+    return jsonify(body = Robson.act(), status=200)
 
-@app.route('/')
+@app.route('/action')
 def interactions():
     return performSimulation()
 

@@ -1,42 +1,51 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@import "tailwindcss";
+
+.eventBox {
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  justify-content: start;
+  position: relative;
+  border: 1em solid #202020;
+  overflow-y: scroll;
+  padding: 3%;
+  scroll-behavior: smooth;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+@keyframes show_dialogue_box {
+  0% {
+    opacity: 0;
+    width: 85%;
   }
-  to {
-    transform: rotate(360deg);
-  }
-}
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  100% {
+    width: 90%;
+    opacity: 1;
   }
 }
-
-.card {
-  padding: 2em;
+.dialogue_box {
+  padding: 2%;
+  margin-top: 2%;
+  background-color: #1e1e1e;
+  width: 90%;
+  height: 10%;
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  animation: show_dialogue_box 2s both ease-in-out;
 }
-
-.read-the-docs {
-  color: #888;
+/*-- This helps with keeping everything within the box on the last child */
+.dialogue_box::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-bottom: 10%;
+  width: 100%;
+  height: 100%;
+}
+.eventBox:last-child {
+  margin: 10%;
 }
