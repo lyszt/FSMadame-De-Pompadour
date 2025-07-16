@@ -4,9 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently \"npm:dev:vite\" \"npm:dev:flask\"",
+    "dev:install": "pip install -r requirements.txt",
+    "dev:start": "concurrently \"npm:dev:vite\" \"npm:dev:flask\"",
     "dev:vite": "vite",
     "dev:flask": "python main.py",
+    "dev": "npm run dev:install && npm run dev:start",
     "build": "tsc -b && vite build",
     "lint": "eslint humanity-simulator",
     "preview": "vite preview"

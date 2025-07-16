@@ -29,6 +29,8 @@ function EventBox() {
             }
             const json: { body: string; status: number } = await response.json();
             setDialogues(prev => [...prev, json.body]);
+            const audio = new Audio('src/assets/audio/click.mp3');
+            await audio.play();
         } catch (error) {
             if (error instanceof Error) {
                 const message = error.message;
