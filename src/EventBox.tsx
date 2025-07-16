@@ -52,7 +52,7 @@ function EventBox() {
           </div>
           <div className="absolute bottom-0 pt-10 w-full h-1/4">
               <div className="w-full h-full bg-stone-500 flex flex-row">
-                  <button type="button" onClick={runTurn} className="pr-10 pl-10 hover:bg-stone-800 bg-stone-950">Next
+                  <button type="button" onClick={runTurn} className="passTurn rounded-xl shadow shadow-stone-800 m-2 pr-5 pl-5 hover:bg-stone-800 bg-stone-950">Next
                       turn
                   </button>
               </div>

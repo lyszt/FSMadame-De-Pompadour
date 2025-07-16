@@ -55,3 +55,11 @@
 .eventBox:first-child {
   background-color: #31aa86;
 }
+
+.passTurn {
+  transition: .3s;
+  background: linear-gradient(90deg, #2d4768, #1a304c);
+}
+.passTurn:active{
+  background: linear-gradient(90deg, #607da5, #1a686c);
+}
