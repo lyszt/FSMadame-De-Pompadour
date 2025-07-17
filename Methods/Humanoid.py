@@ -19,7 +19,7 @@ class Humanoid:
     def idle_action(self):
         pass
     @abstractmethod
-    def against_another(self):
+    def against_another_neutral(self):
         pass
     @abstractmethod
     def act(self, actors_around: list, action_history: list):

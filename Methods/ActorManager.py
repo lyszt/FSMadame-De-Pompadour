@@ -2,7 +2,7 @@ from typing import Any
 
 from .Humanoid import Humanoid
 from .NameGenerator import NameGenerator
-from .Poor import Poor
+from .Crewman import Crewman
 import random
 
 class ActorManager:
@@ -15,7 +15,7 @@ class ActorManager:
 
     def populate(self, population: int):
         for i in range(population):
-            NPC: Poor = Poor(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9))
+            NPC: Crewman = Crewman(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9))
             self.actors.append(NPC)
 
     def get_random_actor(self) -> Humanoid:

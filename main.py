@@ -6,7 +6,7 @@ import typing
 
 import dotenv
 
-from Methods.Poor import Poor
+from Methods.Crewman import Crewman
 # Essentials
 from flask import Flask, render_template, jsonify
 from flask_cors import CORS
