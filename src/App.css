@@ -30,7 +30,7 @@
   margin-top: 2%;
   background-color: #1e1e1e;
   width: 90%;
-  height: 10%;
+  height: fit-content;
   display: flex;
   align-items: center;
   justify-content: start;
