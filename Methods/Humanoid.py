@@ -22,5 +22,5 @@ class Humanoid:
     def against_another(self):
         pass
     @abstractmethod
-    def act(self, actors_around: list):
+    def act(self, actors_around: list, action_history: list):
         pass

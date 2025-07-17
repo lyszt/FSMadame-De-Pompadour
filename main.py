@@ -1,6 +1,10 @@
 import json
+import os
 import random
+import traceback
 import typing
+
+import dotenv
 
 from Methods.Poor import Poor
 # Essentials
@@ -12,13 +16,16 @@ from Methods.ActorManager import ActorManager
 app = Flask(__name__)
 CORS(app, resources={r"/action": {"origins": "http://localhost:5173"}})
 
+dotenv.load_dotenv(dotenv.find_dotenv())
 actor_manager: ActorManager = ActorManager()
 # In order to make the simulation, we need to populate
 # Our manager with NPCS
 actor_manager.populate(10)
+action_history: list = []
 
 def perform_random_act():
-    act_of_random: str = actor_manager.act_randomnly()
+    act_of_random: str = actor_manager.act_randomnly(action_history=action_history)
+    action_history.append(act_of_random)
     return jsonify(body = act_of_random, status=200)
 
 @app.route('/action')
@@ -26,6 +33,7 @@ def interactions():
     try:
         return perform_random_act()
     except Exception as e:
+        traceback.print_exc()
         return jsonify(error=str(e)), 500
 
 
