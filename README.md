@@ -38,10 +38,6 @@ Crewman Case tidies their personal sleeping quarters.
 Crewman Claire heads towards the mess hall, hoping the lukewarm beef isn't as bad as Sonny said.
 
 ```
-Of course. Scrapping the previous analysis and focusing on a "tech demo" style gives it a completely different energy. The goal is to showcase the simulation's capabilities by using the character actions as evidence of a dynamic, underlying system.
-
-Here is the revised text, presented as a single, flowing description.
-
 In this demonstration snapshot from the FS Madame de Pompadour simulation, we observe a complex and dynamic social ecosystem in motion. The system showcases its capacity for generating emergent narrative not through pre-scripted events, but by allowing independent agents to interact, creating a rich and believable tapestry of life on the lower decks.
 
 Notice the subtle social friction demonstrated between several crewmembers. Crewman Brock pointedly turns to a control panel to ignore Crewman Aldric, a clear, non-verbal sign of conflict. This tension is immediately recognized and escalated by Crewman Torre, whose simulation generates a thumbs-up that "doesn't quite reach their eyes"—a perfect example of nuanced, passive-aggressive behavior arising organically. At the same time, we see Crewman Halvard directing a question to the group while deliberately avoiding eye contact with Crewman Reginauld, hinting at another underlying social dynamic.
