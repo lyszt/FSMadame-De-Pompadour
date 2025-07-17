@@ -57,7 +57,7 @@ function EventBox() {
                           items-center rounded-xl shadow
                           shadow-stone-800 m-2 pr-3 pl-3 hover:bg-stone-800">
                       <img className="w-7" src="src/assets/icons/arrow.svg" alt="Pass turn"/>
-                      <span className="text-sm font-bold">Next Turn</span>
+                      <span className="text-sm font-bold">Next</span>
                   </button>
               </div>
           </div>

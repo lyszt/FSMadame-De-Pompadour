@@ -35,3 +35,45 @@ h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
+
+#google_translate_element {
+  position: fixed;
+  top: 0;
+  background-color: white;
+  width: 100%;
+}
+#google_translate_element img {
+  display: none;
+}
+body>.skiptranslate {
+  display: none;
+  visibility: hidden;
+}
+.skiptranslate {
+  margin: 0 !important;
+  display: flex;
+  box-shadow: none !important;
+  border: none !important;
+  align-content: center;
+  align-items: center;
+  grid-gap: 7%;
+}
+#goog-gt-vt {
+  display: none;
+}
+.goog-te-gadget .goog-te-combo {
+  border: none;
+  margin: 4px 0;
+  margin-left: 10%;
+  background-color: white;
+  transition: 1s;
+  padding: 4%;
+}
+.goog-te-gadget .goog-te-combo:hover {
+  background-color: #d9d9d9;
+  padding: 4.5%;
+}
+.image-break {
+  height: 50vh;
+  overflow: hidden;
+}
