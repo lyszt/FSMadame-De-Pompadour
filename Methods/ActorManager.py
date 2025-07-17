@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Dict
 
 from .Humanoid import Humanoid
 from .NameGenerator import NameGenerator
@@ -7,16 +7,22 @@ import random
 
 class ActorManager:
     def __init__(self):
-        self.actors = []
+        self.actors: Dict[Humanoid] = {}
 
 
     def add(self, actor: Humanoid):
-        self.actors.append(actor)
+        self.actors[actor.id] = actor
 
     def populate(self, population: int):
         for i in range(population):
             NPC: Crewman = Crewman(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9))
-            self.actors.append(NPC)
+            self.actors[NPC.id] = (NPC)
+
+    def get_actor_by_id(self, id: UUID):
+        return self.actors[id]
+
+    def get_actor_list(self):
+        return self.actors
 
     def get_random_actor(self) -> Humanoid:
         if not self.actors:
