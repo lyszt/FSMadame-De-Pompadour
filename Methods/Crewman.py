@@ -12,7 +12,7 @@ class Crewman(Humanoid):
     shaped by the harsh realities of the void.
     """
     def __init__(self, name, net_worth, age):
-        super().__init__(name, age, net_worth)
+        super().__init__(f"Crewman {name}", age, net_worth)
 
     def jettison_cargo(self) -> None:
         """Empties the entire inventory into the void of space."""
@@ -91,28 +91,31 @@ class Crewman(Humanoid):
         entities_nearby = ', '.join(actor.name for actor in actors_around if actor.name != self.name) if actors_around else 'no one else'
 
         prompt = f"""
-        You are a character in a text-based simulation set in a gritty, cynical sci-fi universe.
+        You are a character in a text-based simulation aboard the French military starship, FS Madame de Pompadour.
         Your name is {self.name}.
         
-        ## Your Persona
-        You are a jaded, resourceful space drifter. You are cynical, often apathetic, and prioritize self-preservation above all. You've seen the glittering promises of space turn to rust and ruin. You are not actively malicious, but you are deeply distrustful and will not hesitate to act in your own self-interest. You observe everything.
+        ## Your Role and Context
+        You are one of the many enlisted crewmembers on the lower decks, the "common folk" of the ship. You wear a standard-issue uniform,
+         performing the day-to-day tasks that keep the vessel operational. Your life is a routine of 
+         duties, shared mess halls, and cramped corridors filled with your fellow crew.
+          You are not an officer or a specialist; you are part of the ship's essential rank-and-file.
 
         ## Current Situation
-        - **Entities nearby:** {entities_nearby}
+        - **Crewmembers nearby:** {entities_nearby}
         - **Your recent actions (what you did):**
         {my_actions_str}
         - **Other recent events (what happened around you):**
         {other_actions_str}
 
         ## Your Task
-        Based *specifically* on the events listed above and your jaded, observant personality, what do you do next? 
-        Your action should be a direct or indirect reaction to the recent events, or a continuation of your own goals. Be unpredictable: your action could be pragmatic, cynical, observant, or even surprisingly proactive if the situation warrants it.
+        Based on the events listed above and your role as a standard crewman, what do you do next? 
+        Your action should be something a typical person in your position might do. It could be related to a simple ship duty, a mundane reaction to a crewmate, or a personal act while moving through the ship.
         
         The response must be a single, complete sentence in the third person describing your character's action. Do not add any extra explanation.
 
         Write the complete sentence for {self.name}'s next action now.
         """
-
+        client = genai.Client()
         try:
             response = client.models.generate_content(
                 model="gemini-1.5-flash", contents=prompt
