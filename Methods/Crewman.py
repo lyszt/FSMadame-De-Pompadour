@@ -17,7 +17,7 @@ class Crewman(Humanoid):
     def jettison_cargo(self) -> None:
         """Empties the entire inventory into the void of space."""
         self.inventory.empty()
-        print(f"{self.name} opens the airlock and jettisons all non-essential cargo. 'Less weight, less problems,' they mutter.")
+        print(f"{self.name} opens the airlock and jettisons all their goods and objects. 'Less weight, less problems,' they mutter.")
 
     def acquire_item(self, item: str):
         """Acquires a new item, viewing it with cynical pragmatism."""
@@ -74,7 +74,6 @@ class Crewman(Humanoid):
         """
         Uses a generative AI to determine the next action based on personality and recent events.
         """
-        client = genai.Client()
         my_recent_actions = []
         other_recent_actions = []
 

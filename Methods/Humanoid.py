@@ -1,10 +1,12 @@
 import random
+import uuid
 from abc import abstractmethod
 
 from .Inventory import Inventory
 
 class Humanoid:
     def __init__(self, name: str, age: int, net_worth: float):
+        self.id: uuid = uuid.uuid4()
         self.name: str = name
         self.age: int = age
         self.net_worth: float = net_worth
