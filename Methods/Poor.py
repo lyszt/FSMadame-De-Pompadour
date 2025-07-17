@@ -40,7 +40,7 @@ class Poor(Humanoid):
             case "to_oneself":
                 return f"{self.name} {self.idle_action()}."
             case "against_another":
-                return f"{self.name} {self.against_another_neutral()} {random.choice(actors_around)}."
+                return f"{self.name} {self.against_another_neutral()} {random.choice(actors_around).name}."
             case "intelligently":
                 print("Generating intelligent action.")
                 return self.act_with_artificial_intelligence(actors_around=actors_around, action_history=action_history)
