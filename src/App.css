@@ -58,8 +58,13 @@
 
 .passTurn {
   transition: .3s;
-  background: linear-gradient(90deg, #2d4768, #1a304c);
+  background: linear-gradient(90deg, #48c67a, #1dd6aa);
 }
+
 .passTurn:active{
   background: linear-gradient(90deg, #607da5, #1a686c);
+}
+.passTurn img {
+  transition: .4s;
+  filter: invert(1);
 }

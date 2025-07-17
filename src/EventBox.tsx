@@ -41,7 +41,7 @@ function EventBox() {
     }
 
   return (
-      <div className="w-3/5 h-4/5 bg-stone-900 m-10 relative">
+      <div className="w-3/5 h-4/5 bg-stone-100 m-10 relative">
           <div ref={scrollContainerRef} className="eventBox w-full h-full">
               {dialogues.map((text, i) => (
                   <p key={i} className="dialogue_box">
@@ -51,9 +51,10 @@ function EventBox() {
 
           </div>
           <div className="absolute bottom-0 pt-10 w-full h-1/4">
-              <div className="w-full h-full bg-stone-500 flex flex-row">
-                  <button type="button" onClick={runTurn} className="passTurn rounded-xl shadow shadow-stone-800 m-2 pr-5 pl-5 hover:bg-stone-800 bg-stone-950">Next
-                      turn
+              <div className="w-full h-full bg-stone-500 flex flex-row items-center">
+                  <button type="button" onClick={runTurn} className="passTurn h-12 gap-2 flex flex-row justify-center items-center rounded-xl shadow shadow-stone-800 m-2 pr-3 pl-3 hover:bg-stone-800 bg-stone-950">
+                      <img className="w-7" src="src/assets/icons/arrow.svg" alt="Pass turn"/>
+                      <span className="text-sm font-bold">Next Turn</span>
                   </button>
               </div>
           </div>
