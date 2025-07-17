@@ -1,3 +1,6 @@
+import random
+from abc import abstractmethod
+
 from .Inventory import Inventory
 
 class Humanoid:
@@ -9,6 +12,15 @@ class Humanoid:
         self.inventory: Inventory = Inventory()
 
 
-    def act(self) -> str:
+    def meow(self) -> str:
         return f"{self.name} is meowing."
 
+    @abstractmethod
+    def idle_action(self):
+        pass
+    @abstractmethod
+    def against_another(self):
+        pass
+    @abstractmethod
+    def act(self, actors_around: list):
+        pass

@@ -26,5 +26,5 @@ class ActorManager:
     def act_randomnly(self) -> Any:
         if not self.actors:
             raise Exception("You must populate the actor manager before making an action.")
-        action = random.choice(self.actors).act()
+        action = random.choice(self.actors).act(self.get_random_actor())
         return action
