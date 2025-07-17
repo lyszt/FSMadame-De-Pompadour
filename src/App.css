@@ -8,7 +8,6 @@
   align-items: center;
   justify-content: start;
   position: relative;
-  border: 1em solid #202020;
   overflow-y: scroll;
   padding: 3%;
   scroll-behavior: smooth;
@@ -67,4 +66,17 @@
 .passTurn img {
   transition: .4s;
   filter: invert(1);
+}
+
+.characterList {
+  overflow: scroll;
+  color: #2a2a2a;
+  padding: 2%
+}
+.characterList span {
+  width: 100%;
+}
+.characterList span:hover {
+  background-color: #cfcfcf;
+  transition: .5s
 }

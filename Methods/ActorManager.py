@@ -1,4 +1,7 @@
 from typing import Any, Dict
+from uuid import UUID
+
+from flask import jsonify
 
 from .Humanoid import Humanoid
 from .NameGenerator import NameGenerator
@@ -22,7 +25,11 @@ class ActorManager:
         return self.actors[id]
 
     def get_actor_list(self):
-        return self.actors
+        serialized = {str(uuid): actor.name for uuid, actor in self.actors.items()}
+        return jsonify({
+            "body": serialized,
+            "status": 200
+        })
 
     def get_random_actor(self) -> Humanoid:
         if not self.actors:

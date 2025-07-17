@@ -9,6 +9,35 @@ function EventBox() {
         'Welcome to FS Madame de Pompadour.',
     ]);
 
+    const [characterList, setCharacterList] = useState<string[]>([]);
+
+    useEffect(() => {
+        async function loadCharacterList() {
+            const url = "http://127.0.0.1:5000/get_actors";
+            try {
+                const response = await fetch(url, { method: 'GET' });
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+
+                const json: { body: Record<string, string>; status: number } = await response.json();
+                const characters = Object.entries(json.body).map(
+                    ([id, name]) => `${name}`
+                );
+                setCharacterList(prev => [...prev, ...characters]);
+
+            } catch (error) {
+                if (error instanceof Error) {
+                    console.error(error.message);
+                } else {
+                    console.error("Unknown error", error);
+                }
+            }
+        }
+
+        loadCharacterList();
+    }, []);
+
     const scrollContainerRef = useRef(null);
     useEffect(() => {
         const node = scrollContainerRef.current;
@@ -34,6 +63,7 @@ function EventBox() {
         } catch (error) {
             if (error instanceof Error) {
                 const message = error.message;
+                setCharacterList(['No characters have been loaded. This must be due to an error.']);
                 console.error(message);
             }
         }
@@ -51,7 +81,14 @@ function EventBox() {
               <br/>
           </div>
           <div className="pt-2 w-full h-full">
-              <div className="w-full h-full flex flex-row">
+              <div className="w-full h-full flex flex-col items-center justify-start">
+                  <div className="w-6/7 h-2/3 bg-stone-200 characterList grid">
+                      {characterList.map((text, i) => (
+                          <span key={i} className="">
+                              {text}
+                          </span>
+                      ))}
+                  </div>
                   <button type="button" onClick={runTurn}
                           className="passTurn h-12 gap-2 flex flex-row justify-center
                           items-center rounded-xl shadow

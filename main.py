@@ -14,7 +14,8 @@ from flask_cors import CORS
 from Methods.NameGenerator import NameGenerator
 from Methods.ActorManager import ActorManager
 app = Flask(__name__)
-CORS(app, resources={r"/action": {"origins": "http://localhost:5173"}})
+CORS(app, resources={r"/action": {"origins": "http://localhost:5173"},
+                      "/get_actors": {"origins": "http://localhost:5173"}})
 
 dotenv.load_dotenv(dotenv.find_dotenv())
 actor_manager: ActorManager = ActorManager()
@@ -36,6 +37,13 @@ def interactions():
         traceback.print_exc()
         return jsonify(error=str(e)), 500
 
+@app.route('/get_actors')
+def get_list_of_crewmembers():
+    try:
+        return actor_manager.get_actor_list()
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify(error=str(e)), 500
 
 if __name__ == '__main__':
 
