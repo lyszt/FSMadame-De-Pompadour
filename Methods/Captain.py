@@ -54,10 +54,12 @@ class Captain(Humanoid):
 
         # Analyze the last 5 events in the action history
         for action in action_history[-5:]:
+            if not action.startswith(self.name):
+                others_recent_actions.append(action)
+
+        for action in action_history:
             if action.startswith(self.name):
                 my_recent_actions.append(action)
-            else:
-                others_recent_actions.append(action)
 
         if len(my_recent_actions) == 0:
             options = ["to_oneself", "against_another"]
@@ -83,13 +85,6 @@ class Captain(Humanoid):
         """
         my_recent_actions = actions[0]
         other_recent_actions = actions[1]
-
-        # Analyze the last 5 events in the action history
-        for action in action_history[-5:]:
-            if action.startswith(self.name):
-                my_recent_actions.append(action)
-            else:
-                other_recent_actions.append(action)
 
         my_actions_str = "\n".join(f"- {action}" for action in my_recent_actions) if my_recent_actions else "None"
         other_actions_str = "\n".join(f"- {action}" for action in other_recent_actions) if other_recent_actions else "None"

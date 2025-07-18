@@ -56,10 +56,12 @@ class Crewman(Humanoid):
 
         # Analyze the last 5 events in the action history
         for action in action_history[-5:]:
+            if not action.startswith(self.name):
+                others_recent_actions.append(action)
+
+        for action in action_history:
             if action.startswith(self.name):
                 my_recent_actions.append(action)
-            else:
-                others_recent_actions.append(action)
 
         print("Generating AI response...")
         actions = [my_recent_actions, others_recent_actions]
