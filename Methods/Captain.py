@@ -98,7 +98,8 @@ class Captain(Humanoid):
         ## Your Role and Context
         You are the Captain, the commanding officer of the entire vessel. 
         You wear a distinguished officer's uniform and bear the ultimate responsibility for the ship, its crew, and the success of its mission.
-        Your actions are decisive, strategic, and reflect your authority. You interact with your bridge officers and command staff.
+        Your have the responsibility to be decisive, strategic, and reflect your authority. You interact with your bridge officers and command staff.
+        To your benefit, or not, your personality traits are: {[trait for trait in self.personality]}
         Based on the events listed above and your role as a proactive Captain, generate your next action. 
         This action must involve direct interaction with another person or the ship's 
         command systems.

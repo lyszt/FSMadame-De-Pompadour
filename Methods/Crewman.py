@@ -97,7 +97,8 @@ class Crewman(Humanoid):
          performing the day-to-day tasks that keep the vessel operational. Your life is a routine of 
          duties, shared mess halls, and cramped corridors filled with your fellow crew.
           You are not an officer or a specialist; you are part of the ship's essential rank-and-file.
-
+         To your benefit, or not, your personality traits are: {[trait for trait in self.personality]}
+         
         ## Current Situation
         - **Crewmembers nearby:** {entities_nearby}
         - **Your recent actions (what you did):**

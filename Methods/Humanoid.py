@@ -12,9 +12,17 @@ class Humanoid:
         self.net_worth: float = net_worth
         self.alive: bool = True
         self.inventory: Inventory = Inventory()
+        with open("Methods/Datasets/personality_traits.txt", "r") as f:
+            personality_list = [line.strip() for line in f if line.strip()]
+        self.personality = []
+        while len(self.personality) != 3:
+            random_trait = random.choice(personality_list)
+            if random_trait not in self.personality:
+                self.personality.append(random.choice(personality_list))
 
 
-    def meow(self) -> str:
+
+def meow(self) -> str:
         return f"{self.name} is meowing."
 
     @abstractmethod
