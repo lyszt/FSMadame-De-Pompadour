@@ -82,7 +82,8 @@ function EventBox() {
           </div>
           <div className="pt-2 w-full h-full">
               <div className="w-full h-full flex flex-col items-center justify-start">
-                  <div className="w-6/7 h-2/3 bg-stone-200 characterList grid">
+                  <h3 className="text-black w-130">Character List</h3>
+                  <div className="w-6/7 h-2/3 bg-stone-200 characterList grid select-none">
                       {characterList.map((text, i) => (
                           <span key={i} className="">
                               {text}

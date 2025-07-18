@@ -75,8 +75,11 @@
 }
 .characterList span {
   width: 100%;
+  padding-left: 2%;
 }
 .characterList span:hover {
+  background-color: #3bc192;
+}
+.characterList span:active {
   background-color: #cfcfcf;
-  transition: .5s
 }
