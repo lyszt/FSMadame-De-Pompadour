@@ -61,18 +61,6 @@ class Crewman(Humanoid):
             else:
                 others_recent_actions.append(action)
 
-        if len(my_recent_actions) == 0:
-                options = ["to_oneself", "against_another"]
-                choice = random.choice(options)
-                if choice == "against_another" and not actors_around:
-                    choice = "to_oneself" # Fallback if no one is around
-                match choice:
-                    case "to_oneself":
-                        return f"{self.name} {self.idle_action()}."
-                    case "against_another":
-                        target = random.choice(actors_around)
-                        return f"{self.name} {self.against_another_neutral()} {target.name}."
-
         print("Generating AI response...")
         actions = [my_recent_actions, others_recent_actions]
         return self.act_with_artificial_intelligence(
