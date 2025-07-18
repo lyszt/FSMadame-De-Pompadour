@@ -7,46 +7,44 @@ FS Madame de Pompadour is a text-based narrative simulator that creates dynamic 
 The goal is to create a "digital terrarium" where complex social dynamics and unexpected events emerge from simple rules and the creative power of AI.
 
 ``` 
+
 Welcome to FS Madame de Pompadour.
 
-Crewman Claire tries to hold their breath for as long as possible.
+Captain Pepillo turned to Crewman Harold and barked, "Report on the disciplinary actions taken against Von."
 
-Crewman Brock turns to face a control panel, pointedly ignoring Crewman Aldric.
+Captain Pepillo turned towards the comms station and demanded, "Get me Lieutenant Dubois immediately."
 
-Crewman Case acknowledges... with a single click over the comms channel Crewman Claire.
+Tedrick leaned towards Crewman Waylon and whispered, "Did you see what Von did? Seems like Captain Pepillo is in a mood today," while subtly adjusting his uniform to appear presentable.
 
-Crewman Reginauld shrugs, then continues polishing the already gleaming brass handrail.
+Konstantin quickly glances at Crewman Harold, then quietly mutters to Crewman Mohammed, "I wonder what Von did to get on the Captain's bad side this time," as he discreetly polishes a section of the nearby railing.
 
-Crewman Halvard uses a corporate logo for target practice with a low-power laser.
+Crewman Von nervously straightens his uniform, then, catching Crewman Ezechiel's eye, mutters under his breath, "This is going to be a long day," hoping Ezechiel will respond.
 
-Crewman Torre gives a thumbs-up that doesn't quite reach their eyes to Crewman Aldric.
+Crewman Mohammed, noticing Konstantin's discreet polishing, glances at the railing and says, "Looks like it needs a good scrub, eh? Perhaps we should do this section together, Konstantin?"
 
-Crewman Sonny sighs, then heads towards the mess hall for a lukewarm ration of reconstituted beef.
+Crewman Harold, noting the tense atmosphere and the Captain's orders, casually adjusted his own uniform and muttered to Crewman Sebastien, "Looks like Von's in the hot seat, eh? Think we should go get a coffee to lighten the mood before duties get more unpleasant?"
 
-Crewman Ignatius listens to garbled transmissions on the long-range comms.
+Seeing the tension, Crewman Westley turns to Crewman Flin and asks, "Did you hear what happened with Von? Seems like the Captain is in a mood, perhaps we should make sure our stations are spotless."
 
-Crewman Ignatius answers a complex question from... with a simple "it's nominal" Crewman Arvie.
+Captain Pepillo asks for their professional opinion Crewman Harold.
 
-Crewman Sonny joins the queue for the mess hall, muttering about the lukewarm beef.
+Captain Pepillo turns to Crewman Von and demands, "Von, report to me immediately on your current station and systems status."
 
-Crewman Halvard directs a question to the group, while looking away from Crewman Reginauld.
+Crewman Westley, noticing the Captain's stern command to Von, quickly turns to Crewman Flin and quietly says, "Flin, let's check the supply lockers, I think the Captain might want the emergency rations inventoried," hoping to appear busy and avoid any unwanted attention.
 
-Crewman Sonny tosses a wrench up and catches it in zero-g.
-
-Crewman Case tidies their personal sleeping quarters.
-
-Crewman Claire heads towards the mess hall, hoping the lukewarm beef isn't as bad as Sonny said.
+Crewman Mohammed, seeing the tension around Captain Pepillo, quietly approached Crewman Ezechiel and whispered, "Do you think we should get some cleaning supplies ready, just in case the Captain needs something done quickly?"
 
 ```
+<img width="580" height="361" alt="image" src="https://github.com/user-attachments/assets/3978819b-118a-40e5-b5b7-6e3c298c22b9" />
+
 In this demonstration snapshot from the FS Madame de Pompadour simulation, we observe a complex and dynamic social ecosystem in motion. The system showcases its capacity for generating emergent narrative not through pre-scripted events, but by allowing independent agents to interact, creating a rich and believable tapestry of life on the lower decks.
 
-Notice the subtle social friction demonstrated between several crewmembers. Crewman Brock pointedly turns to a control panel to ignore Crewman Aldric, a clear, non-verbal sign of conflict. This tension is immediately recognized and escalated by Crewman Torre, whose simulation generates a thumbs-up that "doesn't quite reach their eyes"—a perfect example of nuanced, passive-aggressive behavior arising organically. At the same time, we see Crewman Halvard directing a question to the group while deliberately avoiding eye contact with Crewman Reginauld, hinting at another underlying social dynamic.
+The simulation ignites with a clear catalyst: a high-ranking authority figure, Captain Pepillo, introducing immediate, high-stakes tension through direct orders. This "command cascade" becomes the central gravitational point for the entire social ecosystem. Notice how his demands don't just trigger individual character scripts, but instead initiate a unified, high-pressure event. This showcases the system's new focus on hierarchical structure, where the actions of a single agent can dictate the focus, mood, and strategic objective for every other character in the shared environment.
 
-While this quiet drama unfolds, the simulation highlights individual personalities through environmental interaction. Halvard displays a rebellious streak, using a low-power laser for target practice on a corporate logo. In contrast, Reginauld meticulously polishes an already gleaming handrail, suggesting a detail-oriented or dutifully bored nature. These are not random actions; they are behaviors selected by the engine that paint a picture of character through action alone. We also see crewmembers engaged in mundane, grounding activities—Sonny idly tossing a wrench in zero-g, Claire testing her breath-holding capacity, and Case tidying their personal quarters.
+As the Captain's orders ripple through the crew, we see the emergence of sophisticated, reactive social strategies. The crewmembers don't just continue with idle tasks; they immediately begin processing the new reality. Watch as characters like Tedrick and Konstantin form temporary conversational pods to gossip and analyze the situation, attempting to make sense of the new power dynamic. More impressively, Crewman Westley demonstrates a higher level of emergent logic by actively formulating a survival strategy—suggesting he and a crewmate appear busy with official tasks to avoid the Captain's wrath. This is not a pre-scripted behavior, but a logical social conclusion generated by the AI in response to a perceived threat, demonstrating a robust capacity for risk assessment.
 
-Crucially, the simulation demonstrates a persistent world with clear cause and effect. Crewman Sonny's initial sigh and complaint about the "lukewarm ration of reconstituted beef" becomes a piece of information in the environment. This directly informs a later action from Crewman Claire, whose motivation for heading to the mess hall is explicitly tied to hoping the food isn't as bad as Sonny claimed.
+This brief window reveals a powerful engine for emergent storytelling that seamlessly blends professional roles with personal anxiety. We see Crewman Harold forced to switch from casual, hushed conversation to giving a formal, professional opinion on the Captain's demand, illustrating the system's ability to manage conflicting social contexts. The entire simulation revolves around the central conflict with Von, creating a unified narrative pressure cooker rather than a collection of separate, quiet dramas. The engine has matured beyond generating a simple tapestry of life, now demonstrating the power to simulate a complex web of social calculation, strategic alliances, and emergent group thinking under duress.
 
-Finally, the system showcases distinct role-based behaviors. Crewman Ignatius is depicted as a focused technician, listening to garbled long-range transmissions and answering a complex question from Crewman Arvie with a terse, professional "it's nominal." His actions, alongside Crewman Case's clipped, single-click comms acknowledgement, illustrate how the engine can produce different flavors of interaction based on a character's implicit role. This brief window reveals a powerful engine for emergent storytelling, where social dynamics, character quirks, and direct causal chains arise naturally from the interaction of AI-driven agents within a shared environment.
 
 FS Madame de Pompadour is built on a modern, decoupled web architecture, separating the backend simulation engine from the frontend user interface for modularity and performance.
 
