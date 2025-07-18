@@ -5,45 +5,43 @@ from google import genai
 from .Humanoid import Humanoid
 from .Inventory import Inventory
 
-class Crewman(Humanoid):
+class Captain(Humanoid):
     """
-    Represents a jaded and resourceful character drifting through space.
-    Their actions are often cynical and focused on self-preservation,
-    shaped by the harsh realities of the void.
+    Represents the commanding officer of a starship, a figure of authority and strategic thinking.
+    Their actions are decisive and reflect their responsibility for the ship and crew.
     """
     def __init__(self, name, net_worth, age):
-        super().__init__(f"Crewman {name}", age, net_worth)
+        super().__init__(f"Captain {name}", age, net_worth)
 
-    def throw_away_own_stuff(self) -> str:
-        """Empties the entire inventory into the void of space."""
+    def jettison_cargo(self) -> str:
+        """Orders the entire inventory to be jettisoned from the vessel."""
         self.inventory.empty()
-        return f"{self.name} opens the airlock and jettisons all their own goods and objects. 'Less weight, less problems,' they mutter."
+        return f"Captain {self.name} gives the order to jettison the cargo. 'Make it so,' they say, watching the main viewscreen."
 
-    def acquire_item(self, item: str):
-        """Acquires a new item, viewing it with cynical pragmatism."""
+    def acquire_item(self, item: str) -> str:
+        """Formally acquires a new item, having it logged and stored."""
         self.inventory.add(item)
-        return f"{self.name} acquires a '{item}'. They give it a cursory glance before stowing it away."
-
+        return f"Captain {self.name} is presented with a '{item}'. They inspect it with a critical eye before nodding. 'Log it.'"
 
     def remove_item(self, item: str):
-            """Removes a specific item from the inventory."""
-            self.inventory.remove(item)
+        """Removes a specific item from the inventory."""
+        self.inventory.remove(item)
 
     def get_inventory(self) -> Inventory:
         """Returns the character's inventory."""
         return self.inventory
 
     def idle_action(self) -> str:
-        """Pulls a random, mundane space-themed action from a file."""
-        with open("Methods/Datasets/crewman_actions.txt", "r") as f:
+        """Pulls a random, command-themed action from a file."""
+        with open("Methods/Datasets/captain_actions.txt", "r") as f:
             action_list = [line.strip() for line in f if line.strip()]
-        return random.choice(action_list)
+        return str.lower(random.choice(action_list))
 
     def against_another_neutral(self) -> str:
-        """Pulls a random neutral action targeting another character."""
-        with open("Methods/Datasets/crewman_target_actions_neutral.txt", "r") as f:
+        """Pulls a random professional action targeting another character."""
+        with open("Methods/Datasets/captain_target_actions_neutral.txt", "r") as f:
             action_list = [line.strip() for line in f if line.strip()]
-        return random.choice(action_list)
+        return str.lower(random.choice(action_list))
 
     def act(self, actors_around: list, action_history: list) -> str | None:
         """
@@ -62,16 +60,16 @@ class Crewman(Humanoid):
                 others_recent_actions.append(action)
 
         if len(my_recent_actions) == 0:
-                options = ["to_oneself", "against_another"]
-                choice = random.choice(options)
-                if choice == "against_another" and not actors_around:
-                    choice = "to_oneself" # Fallback if no one is around
-                match choice:
-                    case "to_oneself":
-                        return f"{self.name} {self.idle_action()}."
-                    case "against_another":
-                        target = random.choice(actors_around)
-                        return f"{self.name} {self.against_another_neutral()} {target.name}."
+            options = ["to_oneself", "against_another"]
+            choice = random.choice(options)
+            if choice == "against_another" and not actors_around:
+                choice = "to_oneself" # Fallback if no one is around
+            match choice:
+                case "to_oneself":
+                    return f"{self.name} {self.idle_action()}."
+                case "against_another":
+                    target = random.choice(actors_around)
+                    return f"{self.name} {self.against_another_neutral()} {target.name}."
 
         print("Generating AI response...")
         actions = [my_recent_actions, others_recent_actions]
@@ -103,21 +101,20 @@ class Crewman(Humanoid):
         Your name is {self.name}.
         
         ## Your Role and Context
-        You are one of the many enlisted crewmembers on the lower decks, the "common folk" of the ship. You wear a standard-issue uniform,
-         performing the day-to-day tasks that keep the vessel operational. Your life is a routine of 
-         duties, shared mess halls, and cramped corridors filled with your fellow crew.
-          You are not an officer or a specialist; you are part of the ship's essential rank-and-file.
+        You are the Captain, the commanding officer of the entire vessel. Your place is on the bridge, the nerve center of the ship.
+        You wear a distinguished officer's uniform and bear the ultimate responsibility for the ship, its crew, and the success of its mission.
+        Your actions are decisive, strategic, and reflect your authority. You interact with your bridge officers and command staff.
 
         ## Current Situation
-        - **Crewmembers nearby:** {entities_nearby}
+        - **Officers/Crew nearby:** {entities_nearby}
         - **Your recent actions (what you did):**
         {my_actions_str}
         - **Other recent events (what happened around you):**
         {other_actions_str}
 
         ## Your Task
-        Based on the events listed above and your role as a standard crewman, what do you do next? 
-        Your action should be something a typical person in your position might do. It could be related to a simple ship duty, a mundane reaction to a crewmate, or a personal act while moving through the ship.
+        Based on the events listed above and your role as the Captain, what do you do next? 
+        Your action should be something a commanding officer would do. It could be giving an order, reviewing strategic data, addressing a bridge officer, or making a command decision.
         
         The response must be a single, complete sentence in the third person describing your character's action. Do not add any extra explanation.
 
@@ -134,4 +131,3 @@ class Crewman(Humanoid):
         except Exception as e:
             print(f"AI action failed: {e}. Falling back to default idle action.")
             return f"{self.name} {self.idle_action()}."
-
