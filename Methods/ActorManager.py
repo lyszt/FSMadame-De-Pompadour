@@ -10,7 +10,7 @@ import random
 
 class ActorManager:
     def __init__(self):
-        self.actors: Dict[Humanoid] = {}
+        self.actors: Dict[UUID, Humanoid] = {}
 
 
     def add(self, actor: Humanoid):
@@ -34,10 +34,10 @@ class ActorManager:
     def get_random_actor(self) -> Humanoid:
         if not self.actors:
             raise Exception("You must populate the actor manager before getting an actor.")
-        return random.choice(self.actors)
+        return random.choice(list(self.actors.values()))
 
     def act_randomnly(self, action_history) -> Any:
         if not self.actors:
             raise Exception("You must populate the actor manager before making an action.")
-        action = random.choice(self.actors).act(self.actors, action_history)
+        action = random.choice(list(self.actors.values())).act(list(self.actors.values()), action_history)
         return action

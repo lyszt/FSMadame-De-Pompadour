@@ -51,31 +51,41 @@ class Crewman(Humanoid):
         Decides the next action, choosing between a simple action,
         an action against another, or a more complex, AI-driven action.
         """
-        options = ["to_oneself", "against_another", "intelligently"]
-        choice = random.choice(options)
 
-        # Ensure actors_around isn't empty for "against_another"
-        if choice == "against_another" and not actors_around:
-            choice = "to_oneself" # Fallback if no one is around
+        my_recent_actions = []
+        others_recent_actions = []
 
-        match choice:
-            case "to_oneself":
-                return f"{self.name} {self.idle_action()}."
-            case "against_another":
-                target = random.choice(actors_around)
-                return f"{self.name} {self.against_another_neutral()} {target.name}."
-            case "intelligently":
-                print("--- Engaging AI for intelligent action generation. ---")
-                return self.act_with_artificial_intelligence(
-                    actors_around=actors_around, action_history=action_history
-                )
+        # Analyze the last 5 events in the action history
+        for action in action_history[-5:]:
+            if action.startswith(self.name):
+                my_recent_actions.append(action)
+            else:
+                others_recent_actions.append(action)
 
-    def act_with_artificial_intelligence(self, actors_around: list, action_history: list) -> str:
+        if len(my_recent_actions) == 0:
+                options = ["to_oneself", "against_another"]
+                choice = random.choice(options)
+                if choice == "against_another" and not actors_around:
+                    choice = "to_oneself" # Fallback if no one is around
+                match choice:
+                    case "to_oneself":
+                        return f"{self.name} {self.idle_action()}."
+                    case "against_another":
+                        target = random.choice(actors_around)
+                        return f"{self.name} {self.against_another_neutral()} {target.name}."
+
+        print("Generating AI response...")
+        actions = [my_recent_actions, others_recent_actions]
+        return self.act_with_artificial_intelligence(
+            actors_around=actors_around, action_history=action_history, actions=actions
+        )
+
+    def act_with_artificial_intelligence(self, actors_around: list, action_history: list, actions: list) -> str:
         """
         Uses a generative AI to determine the next action based on personality and recent events.
         """
-        my_recent_actions = []
-        other_recent_actions = []
+        my_recent_actions = actions[0]
+        other_recent_actions = actions[1]
 
         # Analyze the last 5 events in the action history
         for action in action_history[-5:]:
@@ -117,7 +127,7 @@ class Crewman(Humanoid):
         client = genai.Client()
         try:
             response = client.models.generate_content(
-                model="gemini-1.5-flash", contents=prompt
+                model="gemini-2.0-flash-lite", contents=prompt
             )
             ai_action_sentence = response.text.strip()
             return ai_action_sentence

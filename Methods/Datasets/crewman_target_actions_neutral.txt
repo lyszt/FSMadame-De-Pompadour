@@ -1,46 +1,83 @@
 gives a curt, mission-focused nod to
 floats past without making eye contact with
-points to the checklist on a tablet instead of speaking to
-plugs in their own headphones upon seeing them approach
+points to the checklist on a PADD instead of speaking to
+plugs in their audio receiver upon seeing them approach
 turns to face a control panel, pointedly ignoring
 offers a clearly forced, professional smile to
-answers a question from... with the briefest possible response
-makes a note about a procedural error made by
+makes a note on a datapad about a procedural error made by
 avoids entering the same module as
-"forgets" to include... in a group communication
-re-does a task just completed by
-uses formal mission titles when addressing
-checks the time on their watch while... is speaking
-floats slightly higher to avoid the direct eyeline of
+"forgets" to add them to a comms channel
+re-calibrates a sensor array just adjusted by
+uses formal mission titles instead of their name when addressing
+adjusts their float to avoid the direct eyeline of
 responds over the local comms instead of speaking directly to
-waits for... to leave the module before beginning a task
-gives a single, noncommittal "copy that" in response to
-avoids their gaze by inspecting a nearby instrument panel
-hands a tool to... without a word
-pauses their own work and waits patiently for... to move
+waits for them to leave the compartment before speaking
+gives a single, noncommittal "Acknowledged" in response to
+avoids their gaze by inspecting a nearby conduit panel
+accepts a datapad from
+pauses their own work and waits pointedly for
 makes a show of re-reading a procedure after getting instructions from
 their voice becomes flat and monotone when speaking to
 briefly makes eye contact, then immediately looks away from
-moves to the opposite side of the module to work
-closes out a shared data file the moment... opens it
+moves to the opposite side of the bridge to work
+closes out a shared diagnostic file the moment they see
 gives a thumbs-up that doesn't quite reach their eyes to
-interrupts, "as per the protocol," when speaking with
-begins cleaning their immediate workspace as... approaches
-answers a complex question from... with a simple "it's nominal"
-defers a question from... to mission control
+interrupts, "As per mission directive," when speaking with
+begins cleaning their immediate workspace upon seeing them approach
+answers a complex technical question from
+defers a direct question from
 speaks only in technical acronyms to
-acknowledges... with a single click over the comms channel
 sends a text-based procedure link instead of explaining something to
-braces themself against a bulkhead as... floats past
+braces themself against a bulkhead as they see
 orients their body towards an exit when speaking with
-taps their fingers impatiently on a tablet while waiting for
+taps their fingers impatiently on a console while waiting for
 avoids sharing the same handhold as
-double-checks the work of... with exaggerated focus
-takes over a task from... without asking
-declines a suggestion from... citing "protocol constraints"
-pointedly consults a manual after receiving advice from
+double-checks, with exaggerated focus, the work of
+takes over a delicate task from
+declines a suggestion from
+pointedly consults a technical manual after receiving advice from
 offers unsolicited "helpful" advice on a simple task to
-starts a timer on their watch as... begins to speak
+starts a personal timer on their wrist unit while looking at
 directs a question to the group, while looking away from
 makes a point of securing their own equipment more firmly near
 their movements become more rigid and less fluid around
+runs a verification diagnostic on a system just signed off on by
+switches to a private comms channel after a query from
+routes a simple request through the ship's computer instead of asking
+Gives a curt, mission-focused nod to
+Adheres to formal titles when addressing
+Requests a second opinion on a sensor reading from
+Cross-references their diagnostic results with
+Provides a concise status update to
+Confirms a direct order from
+Delegates a secondary maintenance task to
+Logs the verbal recommendation made by
+Asks for technical clarification from
+Briefs them on the latest directive from command
+Verifies the security clearance of
+Relays a message from mission control to
+Defers to the senior expertise of
+Syncs their datapad with the one held by
+Offers to assist with a complex calibration
+Requests the final sign-off for a procedure from
+Follows the hand-gestured instructions of
+Acknowledges a procedural correction from
+Reports a system anomaly directly to
+Initiates a shared diagnostic with
+Works at a console adjacent to
+Floats past on their way to another module
+Receives a tool that is passed from
+Listens to a comms announcement with
+Observes the task being performed by
+Stands by while waiting for
+Enters the turbolift with
+Holds a component steady for
+Takes over the next shift from
+Sits at the same mess hall table as
+Responds to a comms hail from
+Pauses to let them pass in the narrow corridor
+Looks in the same direction as
+Adjusts a setting on a shared control panel with
+Picks up a datapad left on a console by
+Copies a data file sent by
+Plugs their PADD into a charging port next to the one used by

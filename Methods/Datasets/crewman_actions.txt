@@ -84,7 +84,6 @@ gazes at a distant nebula, wondering what's there
 empties a small pouch of debris from their pocket, examining each piece
 reviews experiment data on a ruggedized laptop
 calibrates a sensor for a microgravity study
-stares out the Cupola window at the Earth below
 organizes a tangle of cables with velcro straps
 wipes condensation off a viewport
 inspects the seals on an internal hatch
@@ -92,7 +91,6 @@ updates a shared procedure on the station's digital wiki
 logs their daily tasks in the mission planner
 observes crystal growth in a sealed container
 sorts fluid samples in a microgravity science glovebox
-taps out a message to family back on Earth
 watches a pre-downloaded movie on a tablet
 listens to music on headphones, floating cross-legged
 performs their daily allotted exercise on the resistive machine
@@ -117,4 +115,3 @@ secures loose items to the wall with bungee cords
 listens to the quiet hum and click of the station's machinery
 examines their own reflection in the dark glass of a monitor
 writes notes on a waterproof slate
-sorts and labels experiment samples for return to Earth
