@@ -35,6 +35,8 @@ Crewman Westley, noticing the Captain's stern command to Von, quickly turns to C
 Crewman Mohammed, seeing the tension around Captain Pepillo, quietly approached Crewman Ezechiel and whispered, "Do you think we should get some cleaning supplies ready, just in case the Captain needs something done quickly?"
 
 ```
+<img width="580" height="361" alt="image" src="https://github.com/user-attachments/assets/3978819b-118a-40e5-b5b7-6e3c298c22b9" />
+
 In this demonstration snapshot from the FS Madame de Pompadour simulation, we observe a complex and dynamic social ecosystem in motion. The system showcases its capacity for generating emergent narrative not through pre-scripted events, but by allowing independent agents to interact, creating a rich and believable tapestry of life on the lower decks.
 
 The simulation ignites with a clear catalyst: a high-ranking authority figure, Captain Pepillo, introducing immediate, high-stakes tension through direct orders. This "command cascade" becomes the central gravitational point for the entire social ecosystem. Notice how his demands don't just trigger individual character scripts, but instead initiate a unified, high-pressure event. This showcases the system's new focus on hierarchical structure, where the actions of a single agent can dictate the focus, mood, and strategic objective for every other character in the shared environment.
