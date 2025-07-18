@@ -43,7 +43,7 @@ class ActorManager:
     def act_randomnly(self, action_history) -> Any:
         if not self.actors:
             raise Exception("You must populate the actor manager before making an action.")
-        if len(action_history) == 0 or self.captain.name not in action_history[-5:]:
+        if len(action_history) == 0 or all(self.captain.name not in action for action in action_history[-5:]):
             return self.captain.act(list(self.actors.values()), action_history)
         action = random.choice(list(self.actors.values())).act(list(self.actors.values()), action_history)
         return action
