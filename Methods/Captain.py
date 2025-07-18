@@ -38,7 +38,7 @@ class Captain(Humanoid):
         return str.lower(random.choice(action_list))
 
     def against_another_neutral(self) -> str:
-        """Pulls a random professional action targeting another character."""
+        """Pulls a random neutral action targeting another character."""
         with open("Methods/Datasets/captain_target_actions_neutral.txt", "r") as f:
             action_list = [line.strip() for line in f if line.strip()]
         return str.lower(random.choice(action_list))
