@@ -69,6 +69,7 @@ Jealous
 Forgiving
 Vengeful
 Ambitious
+Forgettable
 Lazy
 Self-motivated
 Procrastinating

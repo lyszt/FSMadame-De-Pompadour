@@ -19,6 +19,9 @@ class Humanoid:
             random_trait = random.choice(personality_list)
             if random_trait not in self.personality:
                 self.personality.append(random.choice(personality_list))
+        self.memory_depth: int = 15
+        if "Forgettable" in self.personality or "addict" in self.personality:
+            self.memory_depth -= 5
 
 
 

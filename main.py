@@ -3,6 +3,7 @@ import os
 import random
 import traceback
 import typing
+from collections import deque
 
 import dotenv
 
@@ -22,10 +23,10 @@ actor_manager: ActorManager = ActorManager()
 # In order to make the simulation, we need to populate
 # Our manager with NPCS
 actor_manager.populate(10)
-action_history: list = []
+action_history: deque = deque(maxlen=100)
 
 def perform_random_act():
-    act_of_random: str = actor_manager.act_randomnly(action_history=action_history)
+    act_of_random: str = actor_manager.act_randomnly(action_history=list(action_history))
     action_history.append(act_of_random)
     return jsonify(body = act_of_random, status=200)
 
