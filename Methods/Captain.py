@@ -57,7 +57,7 @@ class Captain(Humanoid):
             if not action.startswith(self.name):
                 others_recent_actions.append(action)
 
-        for action in action_history:
+        for action in action_history[-self.memory_depth:]:
             if action.startswith(self.name):
                 my_recent_actions.append(action)
 
