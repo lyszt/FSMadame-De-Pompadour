@@ -168,3 +168,103 @@ Conformist
 Nonconformist
 Humanitarian
 Dogmatic
+Drunkard
+Alcoholic
+Drug addict
+Chain smoker
+Workaholic
+Shopaholic
+Compulsive liar
+Adrenaline junkie
+Sex addict
+Gambling addict
+Food addict
+Hoarder
+Internet addict
+Social media addict
+Obsessive cleaner
+Geek
+Nerd
+Bookworm
+Gamer
+Otaku
+Weeb
+Jock
+Techie
+Hacker
+Luddite
+Metalhead
+Punk
+Goth
+Skater
+Cosplayer
+Academic
+Polymath
+Pseudointellectual
+Fanatic
+Cultist
+Loner
+Social butterfly
+Wallflower
+Extrovert
+Introvert
+Ambivert
+Leader
+Follower
+Control freak
+Martyr
+Clown
+Bully
+Victim
+Sycophant
+Narcissist
+Doormat
+Attention-seeker
+Alpha
+Beta
+Sigma
+Rebel
+Outlaw
+Delinquent
+Anarchist
+Vandal
+Pyromaniac
+Kleptomaniac
+Con artist
+Scammer
+Slacker
+Degenerate
+Misfit
+Parasite
+Sociopath
+Psychopath
+Minimalist
+Maximalist
+Vegan
+Carnivore
+Environmentalist
+Hustler
+Nomad
+Hermit
+Prepper
+Hypochondriac
+Fitness freak
+Couch potato
+Night owl
+Early bird
+Perfectionist
+Slob
+Neat freak
+Foodie
+Fashionista
+Spendthrift
+Troll
+Lurker
+Influencer
+Streamer
+Keyboard warrior
+Cyberbully
+Doomer
+Bloomer
+Zoomer
+Normie
