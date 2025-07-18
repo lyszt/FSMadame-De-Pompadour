@@ -9,7 +9,8 @@ function EventBox() {
         'Welcome to FS Madame de Pompadour.',
     ]);
 
-    const [characterList, setCharacterList] = useState<string[]>([]);
+    const [characterList, setCharacterList] = useState<{ id: string; name: string }[]>([]);
+
 
     useEffect(() => {
         async function loadCharacterList() {
@@ -22,7 +23,7 @@ function EventBox() {
 
                 const json: { body: Record<string, string>; status: number } = await response.json();
                 const characters = Object.entries(json.body).map(
-                    ([id, name]) => `${name}`
+                    ([id, name]) => ({ id, name })
                 );
                 setCharacterList(prev => [...prev, ...characters]);
 
@@ -84,11 +85,12 @@ function EventBox() {
               <div className="w-full h-full flex flex-col items-center justify-start">
                   <h3 className="text-black w-130">Character List</h3>
                   <div className="w-6/7 h-2/3 bg-stone-200 characterList grid select-none">
-                      {characterList.map((text, i) => (
-                          <span key={i} className="">
-                              {text}
-                          </span>
+                      {characterList.map((char) => (
+                      <span key={char.id} id={char.id} className="">
+                          {char.name}
+                      </span>
                       ))}
+
                   </div>
                   <button type="button" onClick={runTurn}
                           className="passTurn h-12 gap-2 flex flex-row justify-center
