@@ -25,12 +25,12 @@ class Humanoid:
 def meow(self) -> str:
         return f"{self.name} is meowing."
 
-    @abstractmethod
-    def idle_action(self):
-        pass
-    @abstractmethod
-    def against_another_neutral(self):
-        pass
-    @abstractmethod
-    def act(self, actors_around: list, action_history: list):
-        pass
+@abstractmethod
+def idle_action(self):
+    pass
+@abstractmethod
+def against_another_neutral(self):
+    pass
+@abstractmethod
+def act(self, actors_around: list, action_history: list):
+    pass
