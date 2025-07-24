@@ -26,3 +26,12 @@ class Inventory:
         if index >= len(self.inventory):
             raise IndexError
         self.inventory[index] = value
+
+    def get_available_slots(self):
+        return sum(1 for item in self.inventory if item is not None)
+
+    def get_occupied_slots(self) -> int:
+        return sum(1 for item in self.inventory if item is not None)
+
+    def is_full(self) -> bool:
+        return self.get_available_slots() == 0
