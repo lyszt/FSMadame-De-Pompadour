@@ -25,8 +25,10 @@ class Environment:
             return None
         return random.choice(self.anomalies)
 
-    def get_attitude_toward(self, ship: Ship) -> str:
-        return self.ship_relations.get(ship.id, "neutral")
-
     def get_visible_ships(self) -> List[Ship]:
         return [s for s in self.ships_sector if s != self.main_ship]
+
+    def introduce(self):
+        return ("Space: the final frontier. These are the voyages of the starship La Madame de Pompadour. Her ongoing mission: to "
+                "explore strange new worlds, to seek out new life-forms and new civilizations; to boldly go where no "
+                "one has gone before.")

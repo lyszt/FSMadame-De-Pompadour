@@ -4,24 +4,29 @@ from uuid import UUID
 from flask import jsonify
 
 from .Captain import Captain
+from .Environment import Environment
 from .Humanoid import Humanoid
 from .NameGenerator import NameGenerator
 from .Crewman import Crewman
 import random
 
+from .Ship import Ship
+
+
 class ActorManager:
     def __init__(self):
-        self.captain: Humanoid
         self.actors: Dict[UUID, Humanoid] = {}
+        self.ship = Ship(crew=list(self.actors.values()),name="La Madame de Pompadour", accuracy=.5)
+        self.environment: Environment = Environment(main_ship=self.ship, ships_sector=None)
+        self.captain = Captain(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship_command=self.ship, environment=self.environment)
 
 
     def add(self, actor: Humanoid):
         self.actors[actor.id] = actor
 
     def populate(self, population: int):
-        self.captain = Captain(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9))
         for i in range(population):
-            NPC: Crewman = Crewman(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9))
+            NPC: Crewman = Crewman(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship=self.ship, environment=self.environment)
             self.actors[NPC.id] = (NPC)
         self.actors[self.captain.id] = self.captain
 
@@ -44,6 +49,8 @@ class ActorManager:
         if not self.actors:
             raise Exception("You must populate the actor manager before making an action.")
         if len(action_history) == 0:
+            return self.environment.introduce()
+        if len(action_history) == 1:
             return self.captain.act(list(self.actors.values()), action_history)
         else:
             if all(self.captain.name not in action for action in action_history[-5:]):

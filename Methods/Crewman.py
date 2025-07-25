@@ -11,8 +11,10 @@ class Crewman(Humanoid):
     Their actions are often cynical and focused on self-preservation,
     shaped by the harsh realities of the void.
     """
-    def __init__(self, name, net_worth, age):
+    def __init__(self, name, net_worth, age, ship, environment):
         super().__init__(f"Crewman {name}", age, net_worth)
+        self.ship = ship
+        self.environment = environment
 
     def throw_away_own_stuff(self) -> str:
         """Empties the entire inventory into the void of space."""

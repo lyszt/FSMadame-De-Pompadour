@@ -19,11 +19,15 @@ class Ship:
             "sensors": {"status": "online", "health": 100.0},
         }
         self.name = name
-        self.weapon_system: WeaponSystem = WeaponSystem(name="Phaser", ship=self, accuracy=accuracy)
+        self.weapon_system: WeaponSystem = WeaponSystem(name="Phaser", accuracy=accuracy)
         self.relations = Dict[Ship, float] # From 0 to 100
 
     def name_weapon_system(self, name):
         self.weapon_system.name_weapon_system(name)
+
+    def set_weapon_system(self, weapon_system: WeaponSystem):
+        self.weapon_system = weapon_system
+
     def apply_damage_to_system(self, system_name: str, amount: float, source: str = "unknown"):
         system = self.systems.get(system_name)
         if not system:
@@ -54,3 +58,4 @@ class Ship:
 
     def get_systems(self):
         return self.systems
+
