@@ -1,4 +1,5 @@
-from typing import List
+import random
+from typing import List, Optional
 
 from .Ship import Ship
 
@@ -11,9 +12,21 @@ class Environment:
         self.main_ship: Ship = main_ship
         self.mood = "Regular"
         self.planet = None
+        self.anomalies: List[str] = []
         self.ships_sector: List[Ship] = ships_sector
         pass
 
 
     def set_mood(self, mood: str):
         self.mood = mood
+
+    def discover_anomaly(self) -> Optional[str]:
+        if not self.anomalies:
+            return None
+        return random.choice(self.anomalies)
+
+    def get_attitude_toward(self, ship: Ship) -> str:
+        return self.ship_relations.get(ship.id, "neutral")
+
+    def get_visible_ships(self) -> List[Ship]:
+        return [s for s in self.ships_sector if s != self.main_ship]

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from .Humanoid import Humanoid
 from .Inventory import Inventory
@@ -20,7 +20,7 @@ class Ship:
         }
         self.name = name
         self.weapon_system: WeaponSystem = WeaponSystem(name="Phaser", ship=self, accuracy=accuracy)
-
+        self.relations = Dict[Ship, float] # From 0 to 100
 
     def name_weapon_system(self, name):
         self.weapon_system.name_weapon_system(name)
