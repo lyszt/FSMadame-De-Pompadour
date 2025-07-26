@@ -62,7 +62,6 @@ class Captain(Humanoid):
     @command
     def jettison_cargo(self) -> str:
         """Orders the ship's entire cargo hold to be jettisoned into space."""
-        # CORRECTED: Using the correct check for an empty inventory list
         if len(self.ship.cargo.inventory) < 1:
             return "The cargo hold is already empty."
         self.ship.cargo.empty()
@@ -90,7 +89,6 @@ class Captain(Humanoid):
     @command
     def get_inventory(self) -> str:
         """Returns a list of items in the captain's personal inventory."""
-        # CORRECTED: Using the correct check for an empty inventory list
         items = self.inventory.inventory
         if len(items) < 1:
             return "The captain checks his pockets and finds them empty."
@@ -128,7 +126,7 @@ class Captain(Humanoid):
         if not target_ship:
             return f"Sensors cannot find a target named '{target_name}' in this sector."
 
-        shot_hits = self.ship.weapon_system.shoot(target_ship, source=self.ship)
+        shot_hits = self.ship.weapon_system.shoot(target_ship)
         if shot_hits:
             return f"The {self.ship.weapon_system.name} fires at {target_ship.name} and scores a direct hit!"
         else:
@@ -138,7 +136,6 @@ class Captain(Humanoid):
     @command
     def check_cargo_manifest(self) -> str:
         """Checks the manifest of the ship's main cargo hold."""
-        # CORRECTED: Using the correct check and access for the inventory list
         cargo_items = self.ship.cargo.inventory
         if len(cargo_items) < 1:
             return "The inventory manifest shows the cargo hold is empty."
@@ -148,7 +145,7 @@ class Captain(Humanoid):
     def idle_action(self) -> str:
         """Pulls a random, command-themed action from a file."""
         try:
-            with open("Methods/Datasets/captain_actions.txt", "r") as f:
+            with open("Methods/Datasets/captain_actions.txt", "r", encoding="utf-8") as f:
                 action_list = [line.strip() for line in f if line.strip()]
             return random.choice(action_list) if action_list else "stands at ease"
         except FileNotFoundError:
@@ -158,7 +155,7 @@ class Captain(Humanoid):
     def against_another_neutral(self) -> str:
         """Pulls a random neutral action targeting another character."""
         try:
-            with open("Methods/Datasets/captain_target_actions_neutral.txt", "r") as f:
+            with open("Methods/Datasets/captain_target_actions_neutral.txt", "r", encoding="utf-8") as f:
                 action_list = [line.strip() for line in f if line.strip()]
             return random.choice(action_list) if action_list else "glances at"
         except FileNotFoundError:
@@ -166,44 +163,29 @@ class Captain(Humanoid):
 
     @command
     def punch(self, target: Humanoid):
+        """Starts a physical altercation with another character."""
+        if not target:
+            return f"{self.name} swings at the air."
+        if not target.alive:
+            return f"{self.name} looks at {target.name}'s body but does nothing."
         target.lose_hp(random.uniform(1,10))
-        places_to_punch = [
-            "jaw",
-            "nose",
-            "stomach",
-            "ribs",
-            "chest",
-            "shoulder",
-            "throat",
-            "eye",
-            "ear",
-            "solar plexus",
-            "groin",
-            "knee",
-            "shin",
-            "temple",
-            "spine",
-            "collarbone",
-            "liver",
-            "kidney",
-            "hand",
-            "elbow",
-            "foot",
-            "neck",
-            "face",
-            "ankle"
-        ]
+        places_to_punch = ["jaw", "nose", "stomach", "ribs", "chest", "shoulder"]
         return f"{self.name} punches {target.name} right in the {random.choice(places_to_punch)}."
 
     @command
     def shoot(self, target: Humanoid):
-        damage = random.uniform(0,100)
-        if damage == 100 or target.health - damage <= 0:
+        """Uses a personal weapon against another character."""
+        if not target:
+            return f"{self.name} draws a weapon but has no target."
+        if not target.alive:
+            return f"{self.name} aims their weapon at {target.name}'s body but doesn't fire."
+        damage = random.uniform(15,50)
+        if target.health - damage <= 0:
             target.lose_hp(damage)
-            return f"{self.name} pulled his weapon and killed {target}."
+            return f"{self.name} pulled his weapon and killed {target.name}."
         else:
             target.lose_hp(damage)
-            return f"{self.name} shot and wound {target}."
+            return f"{self.name} shot and wounded {target.name}."
 
     def get_captain_command(self, action_sentence: str) -> dict:
         """
@@ -213,28 +195,30 @@ class Captain(Humanoid):
         command_list_str = "\n".join(
             f'- "{name}": "{desc}"' for name, desc in self.command_descriptions.items()
         )
+        valid_systems = list(self.ship.get_systems().keys())
 
         prompt = f"""
         You are a command interpreter for a starship captain in a simulation. Based on the captain's intended action, choose the most appropriate command, extract its argument, and create a line of dialogue.
 
         Available Commands:
         {command_list_str}
-        "None": Use this if the action does not map to any command.
+        
+        "None": Use this if the action is purely conversational or doesn't map to a command.
 
         Instructions:
         1. Analyze the captain's intended action below.
-        2. If it maps to one of the available commands, identify that command.
-        3. If the command requires an argument (like an item name), extract it for the "arg" field.
+        2. If it clearly maps to one of the available commands, identify that command.
+        3. If the command requires an argument (like an item name or a character's name), extract it for the "arg" field.
         4. Generate a single, in-character line of dialogue for the captain that fits the action. Place it in the "dialogue" field.
-        5. If the action is conversational or doesn't match any command, return "None" for the command.
-
+        5. If the action does not correspond to any known command, return "None" for the command.
+        6.  **Crucially, for the `order_repairs` command, you MUST translate the captain's words into one of the exact system names from this list: {valid_systems}. This translated name is the `arg`.**
         Intended Action: "{action_sentence}"
 
         Respond with only the JSON object.
         """
         try:
             response = self.client.models.generate_content(
-                model="gemini-2.0-flash-lite",
+                model="gemini-2.5-flash",
                 contents=prompt,
                 config={
                     "response_mime_type": "application/json",
@@ -259,40 +243,37 @@ class Captain(Humanoid):
         other_actions_str = "\n".join(f"- {action}" for action in other_recent_actions) if other_recent_actions else "None"
         entities_nearby = ', '.join(actor.name for actor in actors_around if actor.name != self.name) if actors_around else 'no one else'
 
+        # CORRECTED: This is the new, improved prompt to prevent logic loops.
         prompt = f"""
         You are a character in a text-based simulation aboard the French military starship, FS Madame de Pompadour.
         Your name is {self.name}.
         
         ## Your Role and Context
-        You are the Captain, the commanding officer of the entire vessel. 
-        You wear a distinguished officer's uniform and bear the ultimate responsibility for the ship, its crew, and the success of its mission.
-        To your benefit or not, your personality traits are: {self.personality}.
-        Based on the events listed above and your role as a proactive Captain, generate your next action. 
-        This action must involve direct interaction with another person or the ship's command systems.
-         
-        It should be a clear, decisive command, a question to an officer, or a direct response to a situation. Avoid passive, silent, or internal actions. 
-        The response must be a single, complete sentence in the third person describing your character's interactive action. Do not add any extra explanation.
-        Add dialogue using quotes.
+        You are the Captain, the commanding officer of the entire vessel. Your goal is to resolve situations, not just report on them.
+        To your benefit or not, your personality traits are: {self.personality}. Act upon those traits.
+
         ## Current Situation
         - **Officers/Crew nearby:** {entities_nearby}
         - **Your recent actions (what you did):**
         {my_actions_str}
         - **Other recent events (what happened around you):**
         {other_actions_str}
-        
-        ## The current situation
+        - **The current ship-wide situation:**
         {self.environment.situation}
-        ## Your Task
-        Based on the events listed above and your role as the Captain, what do you do next? 
-        Your action should be something a commanding officer would do. It could be giving an order, reviewing strategic data, addressing a bridge officer, or making a command decision.
-        
-        The response must be a single, complete sentence in the third person describing your character's action. Do not add any extra explanation.
+
+        ## Your Task & Rules
+        1.  **Analyze the situation:** Look at the ship-wide situation and recent events.
+        2.  **Avoid Redundancy:** If you have recently requested a status report or asked for information about the current problem, **do not do the same thing.**
+        3.  **Take Decisive Action:** Your job is to move the situation forward. Instead of asking for information that was just provided, issue a direct order to solve the problem. Order your crew.
+        4.  **Be a Commander:** Your action must be a clear command or a direct interaction with a crew member or ship system.
+
+        Based on these rules, what is your next decisive action? The response must be a single, complete sentence in the third person, including dialogue.
 
         Write the complete sentence for {self.name}'s next action now.
         """
         try:
             response = self.client.models.generate_content(
-                model="gemini-2.0-flash-lite",
+                model="gemini-2.5-flash",
                 contents=prompt
             )
             ai_action_sentence = response.text.strip()
@@ -321,7 +302,7 @@ class Captain(Humanoid):
                     target = random.choice(actors_around)
                     return f"{self.name} {self.against_another_neutral()} {target.name}."
 
-        print("\n--- Captain AI Action Cycle ---")
+        print(f"\n--- Captain AI Action Cycle for {self.name} ---")
 
         others_recent_actions = [action for action in action_history[-5:] if not action.startswith(self.name)]
         action_sentence = self.act_with_artificial_intelligence(
@@ -340,13 +321,16 @@ class Captain(Humanoid):
             sig = inspect.signature(command_to_execute)
 
             kwargs_to_pass = {}
-            if 'item' in sig.parameters:
-                kwargs_to_pass['item'] = command_data.get("arg")
-            elif 'arg' in sig.parameters:
-                kwargs_to_pass['arg'] = command_data.get("arg")
+            arg_value = command_data.get("arg")
 
-            if 'actors_around' in sig.parameters:
-                kwargs_to_pass['actors_around'] = actors_around
+            if 'target' in sig.parameters:
+                target_name_part = arg_value.split()[-1] if arg_value else ""
+                target_obj = next((actor for actor in actors_around if target_name_part in actor.name), None)
+                kwargs_to_pass['target'] = target_obj
+            elif 'item' in sig.parameters:
+                kwargs_to_pass['item'] = arg_value
+            elif 'arg' in sig.parameters:
+                kwargs_to_pass['arg'] = arg_value
 
             command_result = command_to_execute(**kwargs_to_pass)
             dialogue = command_data.get("dialogue")

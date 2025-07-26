@@ -22,7 +22,7 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 actor_manager: ActorManager = ActorManager()
 # In order to make the simulation, we need to populate
 # Our manager with NPCS
-actor_manager.populate(10)
+actor_manager.populate(5)
 action_history: deque = deque(maxlen=100)
 
 def perform_random_act():
