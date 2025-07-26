@@ -208,23 +208,29 @@ class Environment:
         ship_status_str = ", ".join([f"{k}: {v['status']}" for k, v in self.main_ship.systems.items()])
         visible_ships_str = ", ".join([s.name for s in self.ships_sector if s != self.main_ship]) or "None"
         recent_events_str = "\n".join(f"- {action}" for action in action_history[-10:])
+        env_actions = [action for action in action_history if action.startswith("ENVIRONMENT:")]
 
         prompt = f"""
-        You are the Storyteller for a chaotic, unpredictable text-based space simulation. Your role is to introduce unexpected events that drive the narrative forward.
-
-        ## Current Situation
-        - Ship Status ({self.main_ship.name}): {ship_status_str}
-        - Other Ships in Sector: {visible_ships_str}
-        - Sector Mood: {self.mood}
-        - Last Environmental Event: {self.situation}
-        - Recent Crew Actions:
-        {recent_events_str}
-
-        ## Your Task
-        Using the current situation as a backdrop, invent the next major event to happen to the ship or its crew.
-        The event does not have to be a direct consequence of what came before. 
-        But it would be good if it were. It can be anything: a technical malfunction, a cosmic phenomenon, a social crisis, a psychological episode, or something completely surreal and unexpected. The goal is to create interesting, unpredictable story beats.
-        Your response must be a single, concise sentence narrating the occurence.
+            You are the Narrator for a text-based space simulation. Your goal is to create a coherent and evolving world, not just random events.
+            
+            ## Current Situation
+            - Ship Status ({self.main_ship.name}): {ship_status_str}
+            - Other Ships in Sector: {visible_ships_str}
+            - Sector Mood: {self.mood}
+            - Last Environmental Event: {self.situation}
+            - Recent Crew Actions:
+            {recent_events_str}
+            - Recent Environmental Actions:
+            {env_actions}
+            
+            ## Your Task & Rules
+            1.  **Build on the Past:** Your primary goal is to build upon the `Last Environmental Event` and the full history of `All Past Environmental Actions`. What is the next logical consequence or development?
+            2.  **Respect Crew Agency:** This rule applies ONLY to the crew of the FS Madame de Pompadour. You can describe events that physically happen **TO** them (e.g., "a loose panel falls, injuring a crewman"). You **MUST NOT** narrate their internal thoughts, feelings, decisions, or voluntary actions.
+            3.  **Narrate External Characters:** You CAN and SHOULD describe the actions, communications, and appearance of characters outside the main ship (e.g., "the alien captain appears on screen, looking furious" or "the pirate vessel opens its weapon ports").
+            4.  **Stay External:** Your narration should focus on events happening TO the ship, AROUND the ship, or what can be OBSERVED from the ship.
+            5.  **Introduce New Events Sparingly:** If the last event has been fully resolved or has gone stale, you may introduce a new, unrelated event.
+        
+            Write a single, concise sentence describing the next environmental event idea based on these rules.
         """
         try:
             response = self.client.models.generate_content(
