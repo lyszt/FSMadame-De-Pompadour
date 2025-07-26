@@ -11,6 +11,7 @@ class Humanoid:
         self.age: int = age
         self.net_worth: float = net_worth
         self.alive: bool = True
+        self.health: float = 100.0
         self.inventory: Inventory = Inventory()
         with open("Methods/Datasets/personality_traits.txt", "r") as f:
             personality_list = [line.strip() for line in f if line.strip()]
@@ -25,15 +26,20 @@ class Humanoid:
 
 
 
-def meow(self) -> str:
-        return f"{self.name} is meowing."
+    def meow(self) -> str:
+            return f"{self.name} is meowing."
 
-@abstractmethod
-def idle_action(self):
-    pass
-@abstractmethod
-def against_another_neutral(self):
-    pass
-@abstractmethod
-def act(self, actors_around: list, action_history: list):
-    pass
+    @abstractmethod
+    def idle_action(self):
+        pass
+    @abstractmethod
+    def against_another_neutral(self):
+        pass
+    @abstractmethod
+    def act(self, actors_around: list, action_history: list):
+        pass
+
+    def lose_hp(self, amount: float):
+        self.health -= amount
+        if self.health <= 0:
+            self.alive = False

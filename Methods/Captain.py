@@ -164,6 +164,46 @@ class Captain(Humanoid):
         except FileNotFoundError:
             return "acknowledges"
 
+    @command
+    def punch(self, target: Humanoid):
+        target.lose_hp(random.uniform(1,10))
+        places_to_punch = [
+            "jaw",
+            "nose",
+            "stomach",
+            "ribs",
+            "chest",
+            "shoulder",
+            "throat",
+            "eye",
+            "ear",
+            "solar plexus",
+            "groin",
+            "knee",
+            "shin",
+            "temple",
+            "spine",
+            "collarbone",
+            "liver",
+            "kidney",
+            "hand",
+            "elbow",
+            "foot",
+            "neck",
+            "face",
+            "ankle"
+        ]
+        return f"{self.name} punches {target.name} right in the {random.choice(places_to_punch)}."
+
+    @command
+    def shoot(self, target: Humanoid):
+        damage = random.uniform(0,100)
+        if damage == 100 or target.health - damage <= 0:
+            target.lose_hp(damage)
+            return f"{self.name} pulled his weapon and killed {target}."
+        else:
+            target.lose_hp(damage)
+            return f"{self.name} shot and wound {target}."
 
     def get_captain_command(self, action_sentence: str) -> dict:
         """
