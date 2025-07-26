@@ -210,21 +210,21 @@ class Environment:
         recent_events_str = "\n".join(f"- {action}" for action in action_history[-10:])
 
         prompt = f"""
-        You are the narrator for a text-based space simulation. Your task is to create the next environmental event.
+        You are the Storyteller for a chaotic, unpredictable text-based space simulation. Your role is to introduce unexpected events that drive the narrative forward.
 
         ## Current Situation
         - Ship Status ({self.main_ship.name}): {ship_status_str}
         - Other Ships in Sector: {visible_ships_str}
         - Sector Mood: {self.mood}
-        - Recent Events:
+        - Last Environmental Event: {self.situation}
+        - Recent Crew Actions:
         {recent_events_str}
 
         ## Your Task
-        Based on the current situation, describe a new environmental event that could happen next.
-        This should be a short, high-level idea. The event can be subtle or dramatic.
-        Examples: 'A strange energy pulse causes a crewman's mind to warp.', 'A plasma conduit ruptures, killing a nearby crewman.', 'The mood in the sector grows more tense.'
-
-        Write a single sentence describing the next environmental event idea.
+        Using the current situation as a backdrop, invent the next major event to happen to the ship or its crew.
+        The event does not have to be a direct consequence of what came before. 
+        But it would be good if it were. It can be anything: a technical malfunction, a cosmic phenomenon, a social crisis, a psychological episode, or something completely surreal and unexpected. The goal is to create interesting, unpredictable story beats.
+        Your response must be a single, concise sentence narrating the occurence.
         """
         try:
             response = self.client.models.generate_content(
