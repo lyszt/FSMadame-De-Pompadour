@@ -46,6 +46,8 @@ class ActorManager:
         return random.choice(list(self.actors.values()))
 
     def act_randomnly(self, action_history) -> Any:
+        if len(action_history) > 2 and "Captain" in action_history[-1]:
+            return self.environment.act(action_history)
         if not self.actors:
             raise Exception("You must populate the actor manager before making an action.")
         if len(action_history) == 0:

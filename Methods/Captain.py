@@ -239,7 +239,9 @@ class Captain(Humanoid):
         {my_actions_str}
         - **Other recent events (what happened around you):**
         {other_actions_str}
-
+        
+        ## The current situation
+        {self.environment.situation}
         ## Your Task
         Based on the events listed above and your role as the Captain, what do you do next? 
         Your action should be something a commanding officer would do. It could be giving an order, reviewing strategic data, addressing a bridge officer, or making a command decision.
