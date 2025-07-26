@@ -58,4 +58,7 @@ class ActorManager:
             if all(self.captain.name not in action for action in action_history[-5:]):
                 return self.captain.act(list(self.actors.values()), action_history)
         action = random.choice(list(self.actors.values())).act(list(self.actors.values()), action_history)
+
+        self.actors = {key: actor for key, actor in self.actors.items() if actor.alive}
+
         return action
