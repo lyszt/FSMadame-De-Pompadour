@@ -2,21 +2,17 @@ import random
 import inspect
 import json
 from typing import List, Optional, Callable
-
-# Ensure you have the necessary libraries installed:
-# pip install google-generativeai pydantic
 from google import genai
 from pydantic import BaseModel, Field
 
 from .Ship import Ship
+from .Humanoid import Humanoid
 
-# Pydantic model to structure the AI's JSON output for environmental events.
 class Command(BaseModel):
     command: Optional[str] = Field(None, description="The specific environmental command to be executed from the available list.")
-    arg: Optional[str] = Field(None, description="The argument required by the command, such as a system name or ship type.")
+    arg: Optional[str] = Field(None, description="The argument required by the command, such as a system or character name.")
     dialogue: Optional[str] = Field(None, description="A descriptive, third-person sentence describing the event as it happens.")
 
-# Decorator to mark methods as executable environmental events.
 def command(func: Callable) -> Callable:
     """Decorator to register a method as an AI-callable environmental command."""
     func.is_command = True
@@ -44,6 +40,7 @@ class Environment:
                 self.commands[name] = method
                 self.command_descriptions[name] = inspect.getdoc(method) or "No description available."
         print(f"Environment commands initialized: {list(self.commands.keys())}")
+
 
 
     @command
@@ -109,6 +106,62 @@ class Environment:
             return f"Sensor sweep results show the following vessels nearby: {', '.join(ships)}."
 
 
+    @command
+    def environment_kill_character(self, arg: Optional[str] = None) -> str:
+        """Causes a fatal 'accident' to a random crew member due to an environmental hazard."""
+        living_crew = [c for c in self.main_ship.crew if c.alive]
+        if not living_crew:
+            return "The ship is eerily silent."
+
+        target = random.choice(living_crew)
+        target.lose_hp(target.health) # Instant kill
+        return f"A sudden, catastrophic failure of a nearby system results in the tragic death of {target.name}."
+
+    @command
+    def environment_hurt_character(self, arg: Optional[str] = None) -> str:
+        """Causes a non-fatal injury to a random crew member from an environmental hazard."""
+        living_crew = [c for c in self.main_ship.crew if c.alive]
+        if not living_crew:
+            return "The ship groans under the strain."
+
+        target = random.choice(living_crew)
+        damage = random.uniform(10, 30)
+        target.lose_hp(damage)
+        return f"A power surge from a console sends a jolt through {target.name}, leaving them injured."
+
+    @command
+    def environment_possess_character(self, arg: Optional[str] = None) -> str:
+        """An unknown influence takes over a crew member. If an arg (a trait) is provided, it's added. Otherwise, their personality is completely rewritten with new, random traits."""
+        living_crew = [c for c in self.main_ship.crew if c.alive]
+        if not living_crew:
+            return "An unseen presence drifts through the empty corridors."
+
+        target = random.choice(living_crew)
+        old_personality = list(target.personality)
+
+        # If a specific trait is passed as an argument, add it.
+        if arg:
+            if arg not in target.personality:
+                target.personality.append(arg)
+                return f"{target.name} shudders as a strange energy passes through them, seemingly adding a new, troubling trait to their personality: '{arg}'."
+            else:
+                return f"{target.name} feels a strange influence but manages to resist any change."
+
+        try:
+            with open("Methods/Datasets/personality_traits.txt", "r") as f:
+                personality_list = [line.strip() for line in f if line.strip()]
+
+            target.personality = []
+            while len(target.personality) != 3:
+                random_trait = random.choice(personality_list)
+                if random_trait not in target.personality:
+                    target.personality.append(random_trait)
+
+            new_personality = list(target.personality)
+            return f"{target.name} suddenly clutches their head, their eyes glazing over. They look up, a completely different person. Their personality has shifted from {old_personality} to {new_personality}."
+        except FileNotFoundError:
+            return f"{target.name} stares blankly for a moment, then shakes their head as if nothing happened."
+
 
     def get_environment_command(self, event_idea: str) -> dict:
         """Analyzes a narrative idea and maps it to a specific environmental command."""
@@ -127,7 +180,7 @@ class Environment:
         Instructions:
         1. Analyze the event idea below.
         2. Choose the command that best represents this event.
-        3. If the command needs an argument (like a system name), extract it.
+        3. If the command needs an argument (like a system name or character name), extract it.
         4. Write a single, descriptive sentence for the "dialogue" field that describes the event happening from a narrative perspective.
 
         Event Idea: "{event_idea}"
@@ -148,71 +201,31 @@ class Environment:
             print(f"Error decoding environment command: {e}")
             return {"command": "None", "arg": None, "dialogue": None}
 
-    def get_environment_command(self, event_idea: str) -> dict:
-        """Analyzes a narrative idea and maps it to a specific environmental command."""
-        print(f"[AI] Deciding environment command for: '{event_idea}'")
-        command_list_str = "\n".join(
-            f'- "{name}": "{desc}"' for name, desc in self.command_descriptions.items()
-        )
-
-        prompt = f"""
-            You are the narrator for a space simulation. Based on the suggested event idea, choose the most appropriate environmental command to execute.
-    
-            Available Commands:
-            {command_list_str}
-            "None": Use this if the event does not map to any command.
-    
-            Instructions:
-            1. Analyze the event idea below.
-            2. Choose the command that best represents this event.
-            3. If the command needs an argument (like a system name or mood), extract it.
-            4. Write a single, descriptive sentence for the "dialogue" field that describes the event happening from a narrative perspective.
-    
-            Event Idea: "{event_idea}"
-    
-            Respond with only the JSON object.
-            """
-        try:
-            response = self.client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config={
-                    "response_mime_type": "application/json",
-                    "response_schema": Command,
-                }
-            )
-            return Command.model_validate_json(response.text).model_dump()
-        except Exception as e:
-            print(f"Error decoding environment command: {e}")
-            return {"command": "None", "arg": None, "dialogue": None}
-
     def act_with_artificial_intelligence(self, action_history: list) -> str:
         """Generates a high-level idea for an environmental event using AI, then maps it to a command and executes it."""
         print("\n--- Environment AI Action Cycle ---")
 
-        # CORRECTED: This now iterates over the actual list of ship objects in self.ships_sector
-        # instead of calling the command version of get_visible_ships().
         ship_status_str = ", ".join([f"{k}: {v['status']}" for k, v in self.main_ship.systems.items()])
         visible_ships_str = ", ".join([s.name for s in self.ships_sector if s != self.main_ship]) or "None"
         recent_events_str = "\n".join(f"- {action}" for action in action_history[-10:])
 
         prompt = f"""
-            You are the narrator for a text-based space simulation. Your task is to create the next environmental event.
-    
-            ## Current Situation
-            - Ship Status ({self.main_ship.name}): {ship_status_str}
-            - Other Ships in Sector: {visible_ships_str}
-            - Sector Mood: {self.mood}
-            - Recent Events:
-            {recent_events_str}
-    
-            ## Your Task
-            Based on the current situation, describe a new environmental event that could happen next.
-            This should be a short, high-level idea.
-            Examples: 'A nearby asteroid suddenly fractures, sending debris toward the ship.', 'The mood in the sector grows more tense.', 'A freighter drops out of warp nearby.'
-    
-            Write a single sentence describing the next environmental event idea.
-            """
+        You are the narrator for a text-based space simulation. Your task is to create the next environmental event.
+
+        ## Current Situation
+        - Ship Status ({self.main_ship.name}): {ship_status_str}
+        - Other Ships in Sector: {visible_ships_str}
+        - Sector Mood: {self.mood}
+        - Recent Events:
+        {recent_events_str}
+
+        ## Your Task
+        Based on the current situation, describe a new environmental event that could happen next.
+        This should be a short, high-level idea. The event can be subtle or dramatic.
+        Examples: 'A strange energy pulse causes a crewman's mind to warp.', 'A plasma conduit ruptures, killing a nearby crewman.', 'The mood in the sector grows more tense.'
+
+        Write a single sentence describing the next environmental event idea.
+        """
         try:
             response = self.client.models.generate_content(
                 model="gemini-2.0-flash-lite",
@@ -233,6 +246,7 @@ class Environment:
             print(f"[OK] Executing environment command: '{command_name}'")
             command_to_execute = self.commands[command_name]
 
+            # The 'arg' for these new commands is optional, so we pass it along.
             command_result = command_to_execute(arg=command_data.get("arg"))
             narrative_description = command_data.get("dialogue") or event_idea
             self.situation = f"{narrative_description} {command_result}"
