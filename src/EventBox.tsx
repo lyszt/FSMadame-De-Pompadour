@@ -1,6 +1,7 @@
 import { useState, createElement, useEffect, useRef } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
+import ambienceAudio from './assets/audio/ambience.mp3'
 import './App.css'
 
 function EventBox() {
@@ -48,13 +49,28 @@ function EventBox() {
         }
     }, [dialogues]);
 
+
+    const ambienceAudioRef = useRef<HTMLAudioElement | null>(null);
+    const hasStartedAmbience = useRef(false);
+
     async function runTurn(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
 
-            try {
+        if (!hasStartedAmbience.current) {
+            ambienceAudioRef.current = new Audio(ambienceAudio);
+            ambienceAudioRef.current.loop = true;
+            ambienceAudioRef.current.play().catch((err  ) => {
+                console.warn('Ambience audio playback failed:', err);
+            });
+            hasStartedAmbience.current = true;
+        }
+
+
+        try {
                 const url = "http://127.0.0.1:5000/action"
                 const audio = new Audio('src/assets/audio/click.mp3');
                 audio.play();
+
                 const response = await fetch(url, {
                     method: 'GET',
                 })

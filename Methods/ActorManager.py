@@ -2,6 +2,7 @@ from typing import Any, Dict
 from uuid import UUID
 
 from flask import jsonify
+from googletrans import Translator
 
 from .Captain import Captain
 from .Environment import Environment
@@ -46,6 +47,7 @@ class ActorManager:
         return random.choice(list(self.actors.values()))
 
     def act_randomnly(self, action_history) -> Any:
+
         if len(action_history) > 2 and "Captain" in action_history[-1] and all("ENVIRONMENT" not in action for action in action_history[-5:]):
             return self.environment.act(action_history)
         if not self.actors:

@@ -4,4 +4,8 @@ python-dotenv
 google-genai
 pydantic
 googletrans
+pydub
+audioop-lts
+numpy
+openai
 gtts
