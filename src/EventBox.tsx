@@ -59,6 +59,7 @@ function EventBox() {
         if (!hasStartedAmbience.current) {
             ambienceAudioRef.current = new Audio(ambienceAudio);
             ambienceAudioRef.current.loop = true;
+            ambienceAudioRef.current.volume -= .9;
             ambienceAudioRef.current.play().catch((err  ) => {
                 console.warn('Ambience audio playback failed:', err);
             });

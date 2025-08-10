@@ -63,7 +63,7 @@ def interactions():
 
 
 @app.route('/text_to_speech', methods=['POST'])
-def text_to_speech(translate: bool = True):
+def text_to_speech(translate: bool = False):
 
     data = request.get_json()
     text = data.get('text', '')
