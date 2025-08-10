@@ -3,3 +3,5 @@ flask_cors
 python-dotenv
 google-genai
 pydantic
+googletrans
+gtts

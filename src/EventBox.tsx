@@ -30,6 +30,7 @@ function EventBox() {
             } catch (error) {
                 if (error instanceof Error) {
                     console.error(error.message);
+                    setCharacterList(['No characters have been loaded. This must be due to an error.']);
                 } else {
                     console.error("Unknown error", error);
                 }
@@ -49,27 +50,43 @@ function EventBox() {
 
     async function runTurn(e: React.MouseEvent<HTMLButtonElement>) {
         e.preventDefault();
-        const url = "http://127.0.0.1:5000/action"
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-            })
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-            const json: { body: string; status: number } = await response.json();
-            setDialogues(prev => [...prev, json.body]);
-            const audio = new Audio('src/assets/audio/click.mp3');
-            await audio.play();
-        } catch (error) {
-            if (error instanceof Error) {
-                const message = error.message;
-                setCharacterList(['No characters have been loaded. This must be due to an error.']);
-                console.error(message);
-            }
-        }
 
-    }
+            try {
+                const url = "http://127.0.0.1:5000/action"
+                const audio = new Audio('src/assets/audio/click.mp3');
+                audio.play();
+                const response = await fetch(url, {
+                    method: 'GET',
+                })
+                if (!response.ok) {
+                    throw new Error(`Response status: ${response.status}`);
+                }
+                const json: { body: string; status: number } = await response.json();
+                setDialogues(prev => [...prev, json.body]);
+                const text = json.body
+                // generate tts
+                const tts_url = "http://127.0.0.1:5000/text_to_speech";
+                const res = await fetch(tts_url, {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text })
+                })
+                if (!res.ok) {
+                    throw new Error(`Server error: ${res.status}`);
+                }
+                const blob = await res.blob();
+                const voice_url = URL.createObjectURL(blob);
+                const voiced_text = new Audio(voice_url);
+                voiced_text.play().catch(err => console.error("Audio playback error:", err));
+
+            } catch (error) {
+                if (error instanceof Error) {
+                    const message = error.message;
+                    console.error(message);
+                }
+            }
+
+        }
 
   return (
       <div className="w-full h-4/5 bg-stone-100 m-2 relative flex flex-row">
