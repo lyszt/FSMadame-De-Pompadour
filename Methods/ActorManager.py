@@ -9,6 +9,7 @@ from .Environment import Environment
 from .Humanoid import Humanoid
 from .NameGenerator import NameGenerator
 from .Crewman import Crewman
+from .Doctor import Doctor
 import random
 
 from .Ship import Ship
@@ -30,6 +31,8 @@ class ActorManager:
             NPC: Crewman = Crewman(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship=self.ship, environment=self.environment)
             self.actors[NPC.id] = (NPC)
         self.actors[self.captain.id] = self.captain
+        doc: Doctor = Doctor(name=NameGenerator().generate_name(), age=random.randint(0,110), net_worth=random.uniform(0, 1e9), environment=self.environment)
+        self.actors[doc.id] = doc
 
     def get_actor_by_id(self, id: UUID):
         return self.actors[id]

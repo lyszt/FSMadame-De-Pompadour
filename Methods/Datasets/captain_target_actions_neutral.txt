@@ -1,70 +1,36 @@
-Gives a curt, mission-focused nod to
-Requests a tactical assessment from
-Assigns a secondary watch duty to
-Asks for a systems update from
-Confirms the verbal report from
-Listens intently to the briefing from
-Makes direct eye contact with
-Gestures towards the main viewscreen for
-Delegates operational command to
-Reviews the datapad handed over by
-Gives a formal nod of approval to
-Queries the tactical readiness of
-Requests a moment of their time in the ready room
-Transfers bridge command to
-Opens a private comms channel to
-Sends a priority directive to
-Acknowledges the formal salute from
-Asks for their professional opinion
-Requests a damage control summary from
-Cross-references the sensor logs with
-Hands a secure datapad to
-Provides a concise summary of fleet orders to
-Authorizes the security request from
-Defers to the specialized knowledge of
-Asks for a projection of the current course from
-Initiates a formal review of the after-action report with
-Requests the presence of
-Summons them to the bridge
-Formally dismisses
-Places them on report
-Commends the quick thinking of
-Relays a direct order to
-Asks for a clarification on a report from
-Waits for the official sign-off from
-Observes the console work of
-Returns the salute of
-Requests a tactical assessment from
-Assigns a secondary watch duty to
-Asks for a systems update from
-Listens intently to the briefing from
-Makes direct eye contact with
-Gestures towards the main viewscreen for
-Delegates operational command to
-Reviews the datapad handed over by
-Gives a formal nod of approval to
-Queries the tactical readiness of
-Requests a moment of their time in the ready room
-Transfers bridge command to
-Opens a private comms channel to
-Sends a priority directive to
-Acknowledges the formal salute from
-Asks for their professional opinion
-Requests a damage control summary from
-Cross-references the sensor logs with
-Hands a secure datapad to
-Provides a concise summary of fleet orders to
-Authorizes the security request from
-Defers to the specialized knowledge of
-Asks for a projection of the current course from
-Initiates a formal review of the after-action report with
-Requests the presence of
-Summons them to the bridge
-Formally dismisses
-Places them on report
-Commends the quick thinking of
-Relays a direct order to
-Asks for a clarification on a report from
-Waits for the official sign-off from
-Observes the console work of
-Returns the salute of
+Asks about the general well-being of
+Inquires about any persistent symptoms from
+Checks the pulse of
+Gives a reassuring nod to
+Offers a sterile wipe to
+Reviews the medical file of
+Listens patiently to the concerns of
+Makes professional, steady eye contact with
+Gestures towards the diagnostic bed for
+Delegates the task of fetching supplies to
+Reviews the datapad with the vitals of
+Gives a nod of medical approval to
+Queries the recent dietary intake of
+Requests a moment of their time in the medical bay
+Opens a secure medical comms channel to
+Sends a prescription reminder to
+Acknowledges the health concerns of
+Asks for their professional opinion on a diagnosis
+Requests a summary of recent physical activity from
+Cross-references the genetic markers of
+Hands a sealed sample container to
+Provides a concise summary of a treatment plan to
+Authorizes a medical leave request for
+Defers to the specialized report from
+Asks for a projection of the recovery time for
+Initiates a formal review of the post-treatment report with
+Requests the presence of, in the medbay
+Summons them for a routine check-up
+Formally clears for duty
+Places them on medical observation
+Commends the resilience of
+Relays a direct medical instruction to
+Asks for a clarification on a symptom described by
+Waits for the formal consent form from
+Observes the posture and gait of
+Returns the respectful nod of
