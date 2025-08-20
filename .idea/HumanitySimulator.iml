@@ -2,7 +2,7 @@
 <module type="PYTHON_MODULE" version="4">
   <component name="FacetManager">
     <facet type="Python" name="Python facet">
-      <configuration sdkName="Python 3.13 (HumanitySimulator)" />
+      <configuration sdkName="Python 3.13 (FSMadame-De-Pompadour)" />
     </facet>
   </component>
   <component name="NewModuleRootManager">
@@ -14,6 +14,6 @@
     <orderEntry type="library" name="jquery-3.4.1.slim" level="application" />
     <orderEntry type="library" name="popper.js" level="application" />
     <orderEntry type="library" name="bootstrap" level="application" />
-    <orderEntry type="library" name="Python 3.13 (HumanitySimulator) interpreter library" level="application" />
+    <orderEntry type="library" name="Python 3.13 (FSMadame-De-Pompadour) interpreter library" level="application" />
   </component>
 </module>

@@ -209,28 +209,36 @@ class Environment:
         visible_ships_str = ", ".join([s.name for s in self.ships_sector if s != self.main_ship]) or "None"
         recent_events_str = "\n".join(f"- {action}" for action in action_history[-10:])
         env_actions = [action for action in action_history if action.startswith("ENVIRONMENT:")]
-
+        characters = [crewman for crewman in self.main_ship.crew]
+        character_personalities = [ trait.personality for trait in characters]
+        personality_who = [dict(zip(characters, character_personalities))]
         prompt = f"""
-            You are the Narrator for a text-based space simulation. Your goal is to create a coherent and evolving world, not just random events.
-            
-            ## Current Situation
-            - Ship Status ({self.main_ship.name}): {ship_status_str}
-            - Other Ships in Sector: {visible_ships_str}
-            - Sector Mood: {self.mood}
-            - Last Environmental Event: {self.situation}
-            - Recent Crew Actions:
-            {recent_events_str}
-            - Recent Environmental Actions:
-            {env_actions}
-            
-            ## Your Task & Rules
-            1.  **Build on the Past:** Your primary goal is to build upon the `Last Environmental Event` and the full history of `All Past Environmental Actions`. What is the next logical consequence or development?
-            2.  **Respect Crew Agency:** This rule applies ONLY to the crew of the FS Madame de Pompadour. You can describe events that physically happen **TO** them (e.g., "a loose panel falls, injuring a crewman"). You **MUST NOT** narrate their internal thoughts, feelings, decisions, or voluntary actions.
-            3.  **Narrate External Characters:** You CAN and SHOULD describe the actions, communications, and appearance of characters outside the main ship (e.g., "the alien captain appears on screen, looking furious" or "the pirate vessel opens its weapon ports").
-            4.  **Stay External:** Your narration should focus on events happening TO the ship, AROUND the ship, or what can be OBSERVED from the ship.
-            5.  **Introduce New Events Sparingly:** If the last event has been fully resolved or has gone stale, you may introduce a new, unrelated event.
+        You are the Master Storyteller for a text-based space simulation. Your goal is to write a complete, evolving narrative, controlling the actions and decisions of all characters—both the main crew and NPCs—to weave a compelling story with themes, pacing, and purpose.
         
-            Write a single, concise sentence describing the next environmental event idea based on these rules.
+        The Story So Far
+        Protagonist Ship ({self.main_ship.name}): {ship_status_str}
+        Current Tone/Mood: {self.mood}
+        Last Chapter's Cliffhanger: {self.situation}
+        Visible ships: {visible_ships_str}
+        Recent Story Developments:
+            {recent_events_str}
+            {env_actions}
+        Dramatis Personae (External Characters): {personality_who}
+        
+        Your Principles of Storytelling
+        1. Advance the Plot: Your primary goal is to introduce a narrative development. Don't just create a problem; introduce a complication, a mystery, a temptation, or a revelation. Ask yourself: What would be most interesting for the story right now?
+        
+        2. Write All Characters Believably: You now control the actions and decisions of everyone. Every action taken, whether by a crew member or an NPC, must be a direct result of their established personality, their motivations, and the current situation. Use the personality notes provided as your guide for their behavior.
+        
+        3. Weave a Narrative, Don't Just Throw Rocks: Avoid generic disasters. Use storytelling tools like foreshadowing, mysteries, or moral dilemmas. Not every event should be an immediate crisis. Build suspense.
+        
+        4. Develop Character Arcs: All characters, including the protagonists, should have evolving motives. Their experiences should shape them. The pragmatic engineer might become reckless after a traumatic event; the cautious captain might learn to take risks. Show this through their actions and decisions.
+        
+        5. Use Description to Set the Scene: Narrate the physical reality to establish mood and tone. A quiet moment observing a beautiful nebula can be just as important as a frantic dogfight.
+        
+        6. Manage the Pace: A good story has rhythm. Follow moments of high tension with opportunities for investigation, character interaction, or reflection. Introduce calm before the storm.
+        
+        Write a short, narrative paragraph (2-4 sentences) describing the next beat of the story, including any character actions or decisions that move the plot forward.
         """
         try:
             response = self.client.models.generate_content(

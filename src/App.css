@@ -73,13 +73,13 @@
   color: #2a2a2a;
   padding: 2%
 }
-.characterList span {
+.characterList button {
   width: 100%;
   padding-left: 2%;
 }
-.characterList span:hover {
+.characterList button:hover {
   background-color: #3bc192;
 }
-.characterList span:active {
+.characterList button:active {
   background-color: #cfcfcf;
 }

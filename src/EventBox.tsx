@@ -12,6 +12,40 @@ function EventBox() {
 
     const [characterList, setCharacterList] = useState<{ id: string; name: string }[]>([]);
 
+    async function getCharInfo(char) {
+        if (!char || !char.id) {
+            console.error("Invalid character object provided. It must have an 'id' property.");
+            return;
+        }
+
+        const url = 'http://127.0.0.1:5000/get_personality';
+
+        const data = {
+            id_number: char.id
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+
+            const personalityTraits = await response.json();
+            console.log(`Personality for character ${char.id}:`, personalityTraits);
+            alert(`${char.name}: ${personalityTraits}`);
+
+        } catch (error) {
+            // Handle any errors that occurred during the fetch operation
+            console.error("Error fetching character personality:", error);
+        }
+    }
 
     useEffect(() => {
         async function loadCharacterList() {
@@ -120,9 +154,9 @@ function EventBox() {
                   <h3 className="text-black w-130">Character List</h3>
                   <div className="w-6/7 h-2/3 bg-stone-200 characterList grid select-none">
                       {characterList.map((char) => (
-                      <span key={char.id} id={char.id} className="">
+                      <button key={char.id} id={char.id} className="" onClick={() => getCharInfo(char)}>
                           {char.name}
-                      </span>
+                      </button>
                       ))}
 
                   </div>

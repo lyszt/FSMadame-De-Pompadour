@@ -4,6 +4,7 @@ import json
 import os
 import random
 import sys
+from uuid import UUID
 
 # Death to windows
 
@@ -35,7 +36,8 @@ app = Flask(__name__)
 
 CORS(app, resources={r"/action": {"origins": "http://localhost:5173"},
                      "/text_to_speech": {"origins": "http://localhost:5173"},
-                     "/get_actors": {"origins": "http://localhost:5173"}})
+                     "/get_actors": {"origins": "http://localhost:5173"},
+                     "/get_personality": {"origins": "http://localhost:5173"}})
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 client = OpenAI()
@@ -96,6 +98,19 @@ def get_list_of_crewmembers():
     except Exception as e:
         traceback.print_exc()
         return jsonify(error=str(e)), 500
+
+@app.route('/get_personality', methods=['POST'])
+def get_personality_traits():
+    data = request.get_json()
+    if not data:
+        return jsonify(error="Invalid request"), 400
+
+    id_number = data.get('id_number')
+    if not id_number:
+        return jsonify(error="Missing id_number"), 400
+
+    personality = actor_manager.get_actor_by_id(UUID(id_number)).personality
+    return jsonify(personality)
 
 
 if __name__ == '__main__':
