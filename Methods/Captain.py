@@ -134,6 +134,14 @@ class Captain(Humanoid):
 
 
     @command
+    def add_focus(self, order: str) -> str:
+        """Adds a current focus."""
+        if not order:
+            return f"{self.name} needs to do something, but doesn't know what."
+        self.tasks.append(order)
+        return f"{self.name}  has decided to '{order}'."
+
+    @command
     def check_cargo_manifest(self) -> str:
         """Checks the manifest of the ship's main cargo hold."""
         cargo_items = self.ship.cargo.inventory
@@ -243,10 +251,10 @@ class Captain(Humanoid):
         other_actions_str = "\n".join(f"- {action}" for action in other_recent_actions) if other_recent_actions else "None"
         entities_nearby = ', '.join(actor.name for actor in actors_around if actor.name != self.name) if actors_around else 'no one else'
 
-        # CORRECTED: This is the new, improved prompt to prevent logic loops.
         prompt = f"""
         You are a character in a text-based simulation aboard the French military starship, FS Madame de Pompadour.
         Your name is {self.name}.
+        The ship's mission: {self.environment.mission}
         
         ## Your Role and Context
         You are the Captain, the commanding officer of the entire vessel. Your goal is to resolve situations, not just report on them.
@@ -282,6 +290,149 @@ class Captain(Humanoid):
             print(f"AI action generation failed: {e}. Falling back to default idle action.")
             return f"{self.name} {self.idle_action()}."
 
+    def set_initial_mission(self, actors_around: list | None = None, action_history: list | None = None) -> str:
+        """
+        NOT a @command. Generates an initial mission log entry (Captain's Log),
+        updates environment.mission with the generated mission text, and extracts
+        an OBJECTIVES: section (if present) to populate self.tasks (overwrites existing tasks).
+        Uses actors_around and self.personality to ground the prompt.
+        """
+        actors_nearby = ', '.join(a.name for a in actors_around if a.name != self.name) if actors_around else "no one else"
+
+        my_recent = [a for a in (action_history or [])[-self.memory_depth:] if a.startswith(self.name)]
+        others_recent = [a for a in (action_history or [])[-5:] if not a.startswith(self.name)]
+        my_actions_str = "\n".join(f"- {a}" for a in my_recent) if my_recent else "None"
+        other_actions_str = "\n".join(f"- {a}" for a in others_recent) if others_recent else "None"
+
+        prompt = f"""
+        You are {self.name}, Captain of the French military starship FS Madame de Pompadour.
+        Your personality traits are: {self.personality}
+
+        Nearby officers/crew: {actors_nearby}
+        Your recent actions: {my_actions_str}
+        Other recent events: {other_actions_str}
+        Current ship situation: {self.environment.situation}
+    
+        TASK:
+        1) Write a Captain's Log entry (one or two short paragraphs, third person) that clearly STATES the initial mission (purpose and concise objectives).
+        2) Include the captain's private reflections in double quotes somewhere in the log.
+        3) After the log paragraph, include a clearly labeled OBJECTIVES: block like this:
+    
+        OBJECTIVES:
+        - <short actionable objective 1>
+        - <short actionable objective 2>
+        - <...>
+    
+        Make OBJECTIVES concise (one line each). The output must be plain text and include the log paragraph followed by the OBJECTIVES block exactly as shown.
+        """
+
+        try:
+            response = self.client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            text = response.text.strip()
+
+            lower = text.lower()
+            idx = lower.find("objectives:")
+            if idx != -1:
+                mission_paragraph = text[:idx].strip()
+                objectives_block = text[idx + len("objectives:"):].strip()
+            else:
+                lines = text.splitlines()
+                mission_lines = []
+                bullets = []
+                i = 0
+                while i < len(lines):
+                    line = lines[i].strip()
+                    if line.startswith("-"):
+                        break
+                    mission_lines.append(lines[i])
+                    i += 1
+                # remaining lines which start with '-' become objectives
+                while i < len(lines):
+                    line = lines[i].strip()
+                    if line.startswith("-"):
+                        bullets.append(line.lstrip("- ").strip())
+                    i += 1
+                mission_paragraph = "\n".join(mission_lines).strip() or text
+                objectives_block = "\n".join(f"- {b}" for b in bullets).strip()
+
+            # Parse objectives into self.tasks
+            parsed_objectives = []
+            if objectives_block:
+                for ln in objectives_block.splitlines():
+                    ln = ln.strip()
+                    if not ln:
+                        continue
+                    if ln.startswith("-"):
+                        parsed_objectives.append(ln.lstrip("- ").strip())
+                    else:
+                        # tolerant: accept non-dash lines as objectives if short
+                        if len(ln) < 200:
+                            parsed_objectives.append(ln.strip())
+
+            mission_text_to_save = mission_paragraph if mission_paragraph else text
+            try:
+                self.environment.mission = mission_text_to_save
+            except Exception:
+                pass
+
+            if parsed_objectives:
+                self.tasks.clear()
+                self.tasks.extend([o for o in parsed_objectives if o])
+
+            return f"Captain's Log — {mission_text_to_save}"
+        except Exception as e:
+            print(f"set_initial_mission failed: {e}")
+            return f"{self.name} reads sealed orders and says nothing."
+
+
+    @command
+    def log_ship_mission(self, actors_around: list, action_history: list) -> str:
+        """
+        @command: Writes a mid-mission Captain's Log update (single paragraph).
+        Uses actors_around and self.personality. Does NOT change mission/objectives.
+        """
+        actors_nearby = ', '.join(a.name for a in actors_around if a.name != self.name) if actors_around else "no one else"
+        my_recent = [a for a in (action_history or [])[-self.memory_depth:] if a.startswith(self.name)]
+        others_recent = [a for a in (action_history or [])[-5:] if not a.startswith(self.name)]
+        my_actions_str = "\n".join(f"- {a}" for a in my_recent) if my_recent else "None"
+        other_actions_str = "\n".join(f"- {a}" for a in others_recent) if others_recent else "None"
+        mission_now = getattr(self.environment, "mission", "No mission set.")
+
+        prompt = f"""
+        You are {self.name}, Captain of the FS Madame de Pompadour.
+        Personality: {self.personality}
+    
+        Current mission (summary): {mission_now}
+        Nearby officers/crew: {actors_nearby}
+    
+        Your recent actions:
+        {my_actions_str}
+    
+        Other recent events:
+        {other_actions_str}
+    
+        RULES:
+        - Produce ONE paragraph, third-person Captain's Log update summarizing progress or complications.
+        - Include the captain's private reflections in double quotes somewhere in the paragraph.
+        - Do NOT redefine the mission or alter objectives; this is a narrative/status entry only.
+        """
+
+        try:
+            response = self.client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+            entry = response.text.strip()
+            return f"Captain's Log — {entry}"
+        except Exception as e:
+            print(f"log_ship_mission failed: {e}")
+            return f"{self.name} considers the log and postpones the entry."
+
+
+
     def act(self, actors_around: list, action_history: list) -> str | None:
         """
         Decides the next action, choosing between a simple action,
@@ -290,17 +441,7 @@ class Captain(Humanoid):
         my_recent_actions = [action for action in action_history[-self.memory_depth:] if action.startswith(self.name)]
 
         if not my_recent_actions:
-            # Fallback to simple, non-AI actions if there's no history
-            options = ["to_oneself", "against_another"]
-            choice = random.choice(options)
-            if choice == "against_another" and not actors_around:
-                choice = "to_oneself"
-            match choice:
-                case "to_oneself":
-                    return f"{self.name} {self.idle_action()}."
-                case "against_another":
-                    target = random.choice(actors_around)
-                    return f"{self.name} {self.against_another_neutral()} {target.name}."
+            self.set_initial_mission(actors_around=actors_around, action_history=action_history)
 
         print(f"\n--- Captain AI Action Cycle for {self.name} ---")
 

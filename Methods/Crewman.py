@@ -203,6 +203,7 @@ class Crewman(Humanoid):
         Based on the events listed above and your role as a standard crewman, what do you do next? 
         Your action should be something a typical person in your position might do. It could be related
          to a simple ship duty, a mundane reaction to a crewmate, or a personal act while moving through the ship.
+         The ship's mission: {self.environment.mission}
         
         The response must be a single, complete sentence in the third person describing your character's
         action. Do not add any extra explanation.

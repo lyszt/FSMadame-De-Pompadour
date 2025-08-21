@@ -45,7 +45,7 @@ client = OpenAI()
 actor_manager: ActorManager = ActorManager()
 # In order to make the simulation, we need to populate
 # Our manager with NPCS
-actor_manager.populate(3)
+actor_manager.populate(5)
 action_history: deque = deque(maxlen=100)
 
 

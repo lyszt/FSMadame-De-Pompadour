@@ -28,6 +28,7 @@ class Environment:
         self.anomalies: List[str] = []
         self.ships_sector: List[Ship] = ships_sector
         self.situation = None
+        self.mission = None
         self.client = genai.Client()
         self.commands = {}
         self.command_descriptions = {}

@@ -62,7 +62,7 @@ class ActorManager:
         if len(action_history) == 0:
             return self.environment.introduce()
         if len(action_history) == 1:
-            return self.captain.act(list(self.actors.values()), action_history)
+            return self.captain.set_initial_mission(list(self.actors.values()), action_history)
         else:
             if all(self.captain.name not in action for action in action_history[-5:]):
                 return self.captain.act(list(self.actors.values()), action_history)

@@ -217,7 +217,7 @@ class Lieutenant(Humanoid):
 
         prompt = f"""
         You are a command interpreter for a starship lieutenant in a simulation. Based on the lieutenant's intended action, choose the most appropriate command, extract its argument, and create a line of dialogue.
-
+        
         Available Commands:
         {command_list_str}
 
@@ -269,7 +269,7 @@ class Lieutenant(Humanoid):
         ## Your Role and Context
         You are the Lieutenant, second-in-command of the vessel. Your role is to carry out the Captain's orders and take tactical initiative when necessary.
         Your personality traits are: {self.personality}. Act upon those traits.
-
+        The ship's mission: {self.environment.mission}
         ## Current Situation
         - **Officers/Crew nearby:** {entities_nearby}
         - **Your recent actions (what you did):**
