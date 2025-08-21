@@ -126,7 +126,7 @@ class Captain(Humanoid):
         if not target_ship:
             return f"Sensors cannot find a target named '{target_name}' in this sector."
 
-        shot_hits = self.ship.weapon_system.shoot(target_ship)
+        shot_hits = self.ship.weapon_system.shoot(target_ship, self.ship)
         if shot_hits:
             return f"The {self.ship.weapon_system.name} fires at {target_ship.name} and scores a direct hit!"
         else:

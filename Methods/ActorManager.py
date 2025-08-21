@@ -7,6 +7,7 @@ from googletrans import Translator
 from .Captain import Captain
 from .Environment import Environment
 from .Humanoid import Humanoid
+from .Lieutenant import Lieutenant
 from .NameGenerator import NameGenerator
 from .Crewman import Crewman
 from .Doctor import Doctor
@@ -31,8 +32,11 @@ class ActorManager:
             NPC: Crewman = Crewman(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship=self.ship, environment=self.environment)
             self.actors[NPC.id] = (NPC)
         self.actors[self.captain.id] = self.captain
+        # Essential archetypes
         doc: Doctor = Doctor(name=NameGenerator().generate_name(), age=random.randint(0,110), net_worth=random.uniform(0, 1e9), environment=self.environment)
         self.actors[doc.id] = doc
+        lieutenant: Lieutenant = Lieutenant(name=NameGenerator().generate_name(), age=random.randint(0,110), net_worth=random.uniform(0, 1e9), environment=self.environment, ship_command=self.ship)
+        self.actors[lieutenant.id] = lieutenant
 
     def get_actor_by_id(self, id: UUID):
         return self.actors[id]

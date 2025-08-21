@@ -97,13 +97,13 @@ class Environment:
         return f"The general feeling in the sector shifts, becoming more {arg}."
 
     @command
-    def get_visible_ships(self, arg: Optional[str] = None) -> str:
+    def get_visible_ships(self, arg: Optional[str] = None) -> List[Ship]:
         """Scans the sector for all other visible ships and reports them."""
-        ships = [s.name for s in self.ships_sector if s != self.main_ship]
+        ships = [s for s in self.ships_sector if s.name != self.main_ship]
         if not ships:
-            return "A sensor sweep confirms there are no other ships in the immediate vicinity."
+            return ships
         else:
-            return f"Sensor sweep results show the following vessels nearby: {', '.join(ships)}."
+            return ships
 
 
     @command
