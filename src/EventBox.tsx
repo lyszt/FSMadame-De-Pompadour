@@ -1,50 +1,23 @@
 import { useState, createElement, useEffect, useRef } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import ambienceAudio from './assets/audio/ambience.mp3'
+import CharacterWindow from './CharacterWindow.tsx';
+import Draggable from 'react-draggable';
 import './App.css'
 
 function EventBox() {
-
+    const nodeRef = useRef(null);
     const [dialogues, setDialogues] = useState<string[]>([
         'Welcome to FS Madame de Pompadour.',
     ]);
 
     const [characterList, setCharacterList] = useState<{ id: string; name: string }[]>([]);
 
-    async function getCharInfo(char) {
-        if (!char || !char.id) {
-            console.error("Invalid character object provided. It must have an 'id' property.");
-            return;
-        }
+    const [activeChar, setActiveChar] = useState<{ id: string; name: string } | null>(null);
 
-        const url = 'http://127.0.0.1:5000/get_personality';
+    function openCharWindow(char: { id: string; name: string; }){
+        console.log("Opening char window");
+        setActiveChar(char)
 
-        const data = {
-            id_number: char.id
-        };
-
-        try {
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
-
-            const personalityTraits = await response.json();
-            console.log(`Personality for character ${char.id}:`, personalityTraits);
-            alert(`${char.name}: ${personalityTraits}`);
-
-        } catch (error) {
-            // Handle any errors that occurred during the fetch operation
-            console.error("Error fetching character personality:", error);
-        }
     }
 
     useEffect(() => {
@@ -154,12 +127,20 @@ function EventBox() {
                   <h3 className="text-black w-130">Character List</h3>
                   <div className="w-6/7 h-2/3 bg-stone-200 characterList grid select-none">
                       {characterList.map((char) => (
-                      <button key={char.id} id={char.id} className="" onClick={() => getCharInfo(char)}>
+                      <button key={char.id} id={char.id} className="" onClick={() => openCharWindow(char)}>
                           {char.name}
                       </button>
                       ))}
 
                   </div>
+
+                  {activeChar && (
+                      <Draggable handle=".handle" nodeRef={nodeRef}>
+                          <div ref={nodeRef} className="absolute left-1/3 top-1/3">
+                              <CharacterWindow char={activeChar} setActiveChar={setActiveChar} />
+                          </div>
+                      </Draggable>
+                  )}
                   <button type="button" onClick={runTurn}
                           className="passTurn h-12 gap-2 flex flex-row justify-center
                           items-center rounded-xl shadow
