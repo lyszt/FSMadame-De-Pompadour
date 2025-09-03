@@ -1,6 +1,5 @@
 import random
-
-import genai
+from google import genai
 from typing import List, Dict, Any
 
 # We assume these classes exist from your project structure,

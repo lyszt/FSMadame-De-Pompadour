@@ -1,7 +1,7 @@
 import random
 import inspect
 from typing import List, Optional, Callable, Dict, Any
-import genai
+from google import genai
 from pydantic import BaseModel, Field
 
 # Assuming these classes are in the same directory or accessible via path
