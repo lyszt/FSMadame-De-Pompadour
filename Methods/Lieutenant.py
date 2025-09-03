@@ -309,12 +309,6 @@ class Lieutenant(Humanoid):
             return self.execute_next_order()
 
         my_recent_actions = [action for action in action_history[-self.memory_depth:] if action.startswith(self.name)]
-
-        if not my_recent_actions:
-            options = ["idle_action", "rally_crew"]
-            choice = random.choice(options)
-            return getattr(self, choice)()
-
         print(f"\n--- Lieutenant AI Action Cycle for {self.name} ---")
 
         others_recent_actions = [action for action in action_history[-5:] if not action.startswith(self.name)]
