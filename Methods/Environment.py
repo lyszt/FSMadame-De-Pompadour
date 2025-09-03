@@ -259,4 +259,11 @@ class Environment:
         return f"ENVIRONMENT: {self.act_with_artificial_intelligence(action_history)}"
 
     def introduce(self):
-        return ("Space: the final frontier...")
+        """Returns the classic introductory monologue for the simulation."""
+        return (
+            "Space: the final frontier. "
+            f"These are the voyages of the starship {self.main_ship.name}. "
+            "Her ongoing mission: to explore strange new worlds, "
+            "to seek out new life and new civilizations, "
+            "to boldly go where no one has gone before."
+        )
