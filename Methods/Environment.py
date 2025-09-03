@@ -208,12 +208,12 @@ class Environment:
             response = self.client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=prompt,
-                generation_config={"response_mime_type": "application/json"},
-                # Assuming Command is a Pydantic model. If not, describe the JSON structure.
+                config={
+                    "response_mime_type": "application/json",
+                    "response_schema": Command,
+                }
             )
-            # This part might need adjustment based on how you handle Pydantic schema with the API
-            # For simplicity, we'll parse it from text if schema isn't directly supported this way.
-            # A more robust way is to define the schema in the API call config.
+
             command_data = Command.model_validate_json(response.text)
             return command_data.model_dump()
         except Exception as e:
