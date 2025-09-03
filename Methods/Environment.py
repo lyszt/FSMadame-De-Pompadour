@@ -37,7 +37,7 @@ class Environment:
 
         # Instantiate the Critic, passing the client for efficiency.
         # This assumes your Critic.__init__ can accept the client.
-        self.critic = Critic(client=self.client)
+        self.critic = Critic()
 
     def _discover_commands(self):
         """Finds all methods decorated with @command and populates the command dictionaries."""

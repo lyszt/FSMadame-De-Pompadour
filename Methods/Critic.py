@@ -31,6 +31,7 @@ class Critic:
 
         self.dialogue_history: List[Dict[str, str]] = []
         self.client = genai.Client()
+        print(f"Critic personality: {self.personality}")
 
     def _add_to_history(self, speaker: str, text: str):
         """Adds an entry to the dialogue history."""
