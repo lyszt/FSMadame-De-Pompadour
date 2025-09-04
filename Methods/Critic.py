@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
     class Rate(BaseModel):
         score: Optional[float] = Field(None, description="The score ranging from 0 to 10 of how much you enjoyed the take.")
+        subjective_bias: Optional[float] = Field(None, description="The score of how much the plot has pleased the traits of your personality.")
         pitch: Optional[str] = Field(None, description="The pitch to send to the storyteller.")
 
 
@@ -108,8 +109,9 @@ from pydantic import BaseModel, Field
             3. Keep your response concise (2-4 sentences) and in character.
             4. Act according to your mood.
             5. Provide a score from 0 to 10 in float to score
+            6. After providing the score, provide a 'subjective_bias' score from -3.0 to +3.0 that reflects how much the pitch personally appeals to your character's personality
             
-            OUTPUT = [score, pitch], in json
+            Your final output must be a single JSON object containing only the keys specified in these instructions.
             """
 
 
@@ -124,7 +126,9 @@ from pydantic import BaseModel, Field
                 )
                 print(f"Command decision from AI: {response.text}")
                 rate_obj = Rate.model_validate_json(response.text)
-                current_score = rate_obj.score
+                base_score = rate_obj.score
+                bonus = rate_obj.subjective_bias
+                current_score = min(10.0, max(0.0, base_score + bonus))
                 self.score_history.append(current_score)
 
                 # --- PID Calculation ---
@@ -180,6 +184,9 @@ from pydantic import BaseModel, Field
     
             YOUR INTERNAL DEBATE THAT LED TO THIS SCENE:
             {self.dialogue_history}
+            
+            YOUR MOOD RIGHT NOW:
+            {self.mood}
     
             THE FINAL OUTCOME OF THE SCENE:
             {final_event_summary}
