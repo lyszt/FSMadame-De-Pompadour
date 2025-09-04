@@ -1,11 +1,20 @@
 import random
 from google import genai
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
+
+from numpy.ma.extras import average
+from pydantic import BaseModel, Field
+
 
 # We assume these classes exist from your project structure,
 # but we don't need to import them to type hint.
 # from .Ship import Ship
 # from .Humanoid import Humanoid
+
+class Rate(BaseModel):
+    score: Optional[str] = Field(None, description="The score ranging from 0 to 10 of how much you enjoyed the take.")
+    pitch: Optional[str] = Field(None, description="The pitch to send to the storyteller.")
+
 
 class Critic:
     """
@@ -24,6 +33,9 @@ class Critic:
         with open("Methods/Datasets/personality_traits.txt", "r") as f:
             personality_list = [line.strip() for line in f if line.strip()]
         self.personality = []
+        self.score_history = []
+        self.enjoyment: float = 5.0
+        self.smoothing_factor = .4
         while len(self.personality) != 3:
             random_trait = random.choice(personality_list)
             if random_trait not in self.personality:
@@ -52,6 +64,9 @@ class Critic:
             str: The critic's feedback, which could be an approval or a suggested revision.
         """
         print(f"[Critic] Reviewing pitch: '{pitch}'")
+        mood = "Be agressive, you aren't enjoying the story at all." if self.enjoyment < 5 \
+            else "You are neutral about the story's quality so far." \
+            if (5 < self.enjoyment <= 7) else "You are really liking the story. Be supportive."
         self._add_to_history("Storyteller", pitch)
 
         # Prepare a condensed string of the environment state for the prompt
@@ -78,18 +93,30 @@ class Critic:
 
         YOUR TASK:
         Write your response.
+        Mood : {mood}
         1. If the pitch is good, approve it but add a small, insightful comment.
         2. If the pitch is weak, random, or betrays character, you MUST reject it and provide a clear, actionable revision. Your revision should tie the event to a specific character's personality or a recent event.
         3. Keep your response concise (2-4 sentences) and in character.
+        4. Act according to your mood.
         """
 
 
         try:
             response = self.client.models.generate_content(
                 model="gemini-2.5-flash",
-                contents=prompt
+                contents=prompt,
+                config={
+                    "response_mime_type": "application/json",
+                    "response_schema": Rate,
+                }
             )
-            critique = response.text.strip()
+            print(f"Command decision from AI: {response.text}")
+            rate_obj = Rate.model_validate_json(response.text)
+            current_score = rate_obj.score
+            self.score_history.append(current_score)
+            self.enjoyment = (current_score * float(self.smoothing_factor)) + (self.enjoyment * (1 - self.smoothing_factor))
+
+            return rate_obj.pitch
         except Exception as e:
             print(f"Critic AI failed to generate review: {e}")
             critique = "Fine. Let's just get on with it."
