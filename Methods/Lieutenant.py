@@ -56,23 +56,6 @@ class Lieutenant(Humanoid):
     # Lieutenant Commands
     # --------------------------
 
-    @command
-    def accept_order(self, order: str) -> str:
-        """Accepts an order from the captain and stores it for execution (uses inherited self.tasks)."""
-        if not order:
-            return f"{self.name} acknowledges but receives no specific order."
-        self.add_task(order)
-        return f"{self.name} acknowledges the captain's order: '{order}'."
-
-
-    @command
-    def task_is_completed(self, task) -> str:
-        """Executes the next pending order from the captain."""
-        if not self.tasks:
-            return f"{self.name} has no orders to execute."
-        self.remove_task(task)
-        return f"{self.name} has finished: '{task}'."
-
     def assist_repairs(self, system: str) -> str:
         """Personally assists the engineering crew with repairing a system."""
         if not system or system not in self.ship.get_systems().keys():
@@ -91,81 +74,6 @@ class Lieutenant(Humanoid):
         ]
         return f"{self.name} {random.choice(options)}."
 
-    @command
-    def acquire_item(self, item: str) -> str:
-        """Adds an item to the lieutenant's personal inventory."""
-        if not item:
-            return f"{self.name} considers acquiring gear but doesn't specify what."
-        self.inventory.add(item)
-        return f"{self.name} secures '{item}' in their kit."
-
-    @command
-    def remove_item(self, item: str) -> str:
-        """Removes an item from the lieutenant's personal inventory."""
-        if not item:
-            return f"{self.name} starts to discard something, then hesitates."
-        try:
-            self.inventory.remove(item)
-            return f"{self.name} removes '{item}' from their kit."
-        except ValueError:
-            return f"{self.name} can't find '{item}' in their kit."
-
-    @command
-    def get_inventory(self) -> str:
-        """Lists items in the lieutenant's personal inventory."""
-        items = self.inventory.inventory
-        if not items:
-            return f"{self.name}'s kit is currently empty."
-        return f"{self.name} checks their kit and finds: {', '.join(items)}."
-
-    @command
-    def equip_item(self, item: str) -> str:
-        """Readies an item from inventory for immediate use."""
-        if not item:
-            return f"{self.name} reaches for gear but doesn't choose anything."
-        if item not in self.inventory.inventory:
-            return f"{self.name} doesn't have '{item}' to equip."
-        self.equipped_item = item
-        return f"{self.name} equips '{item}'."
-
-    @command
-    def use_item(self, item: str) -> str:
-        """Uses an item from inventory in a contextual, narrative way."""
-        if not item:
-            return f"{self.name} considers using a tool but doesn't pick one."
-        if item not in self.inventory.inventory:
-            return f"{self.name} can't use '{item}'—it's not in the kit."
-        return f"{self.name} uses the '{item}' as needed for the situation."
-
-    # --------------------------
-    # Combat / Direct Interaction Commands (parity with Captain)
-    # --------------------------
-
-    @command
-    def punch(self, target: Humanoid):
-        """Starts a physical altercation with another character."""
-        if not target:
-            return f"{self.name} swings at the air."
-        if not target.alive:
-            return f"{self.name} looks at {target.name}'s body but does nothing."
-        target.lose_hp(random.uniform(1, 10))
-        places_to_punch = ["jaw", "nose", "stomach", "ribs", "chest", "shoulder"]
-        return f"{self.name} punches {target.name} right in the {random.choice(places_to_punch)}."
-
-    @command
-    def shoot(self, target: Humanoid):
-        """Uses a personal weapon against another character."""
-        if not target:
-            return f"{self.name} draws a weapon but has no target."
-        if not target.alive:
-            return f"{self.name} aims their weapon at {target.name}'s body but doesn't fire."
-        damage = random.uniform(15, 50)
-        if target.health - damage <= 0:
-            target.lose_hp(damage)
-            return f"{self.name} pulled a weapon and killed {target.name}."
-        else:
-            target.lose_hp(damage)
-            return f"{self.name} shot and wounded {target.name}."
 
     def get_lieutenant_command(self, action_sentence: str) -> dict:
         """

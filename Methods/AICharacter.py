@@ -20,11 +20,15 @@ class _CharacterSheetSchema(BaseModel):
     motivation: str = Field(..., description="What fundamentally drives this character? (e.g., 'To earn enough money to retire,' 'To uncover a political conspiracy').")
     secret: str = Field(..., description="A hidden secret the character is protecting.")
     backstory: str = Field(..., description="A brief, one or two-sentence backstory explaining their origin and why they are on this ship.")
+    unarmed_attack_verb: str = Field(..., description="A short, descriptive verb phrase for how this character attacks unarmed, based on their race and appearance (e.g., 'punches', 'slashes with its talons at', 'slams its metallic fist into').")
+    weapon_attack_verb: str = Field(..., description="A short, descriptive verb phrase for how this character attacks with a generic ranged weapon, based on their primary skill (e.g., 'fires a wild shot at', 'coolly takes aim and shoots at', 'unleashes a volley towards').")
+    kill_description: str = Field(..., description="A short, flavorful sentence describing how this character delivers a finishing blow, reflecting their personality (e.g., 'ends the fight with brutal efficiency', 'looks away as they deliver the final shot', 'shows a moment of regret before finishing it').")
 
 class Command(BaseModel):
     command: Optional[str] = Field(None, description="The specific command to be executed.")
-    arg: Optional[str] = Field(None, description="The argument for the command, if needed.")
+    arg: Optional[str] = Field(None, description="The argument for the command, if needed (e.g., a target's name or a system name).")
     dialogue: Optional[str] = Field(None, description="A line of dialogue for the character to say.")
+    magnitude: Optional[str] = Field(None, description="For actions with variable power (like heal or sabotage), a descriptive level: 'minor', 'moderate', or 'critical'.")
 
 def command(func: Callable) -> Callable:
     """Decorator to register a method as an AI-callable command."""
@@ -42,10 +46,12 @@ class AICharacter(Humanoid):
             concept: str,
             ship: Ship,
             environment: 'Environment',
+            actor_manager: 'ActorManager',
             net_worth: float = 100.0
     ):
         self.ship = ship
         self.environment = environment
+        self.actor_manager = actor_manager
         self.client = genai.Client()
 
         # Instantiate self concept from prompt
@@ -59,7 +65,6 @@ class AICharacter(Humanoid):
     def _generate_and_apply_sheet(self, concept: str):
         """
         Calls the AI to generate character details from a concept and applies them directly to the instance.
-        This method is called by __init__ to self-populate the character sheet.
         """
         print(f"Generating new AI character from concept: '{concept}'")
 
@@ -68,6 +73,10 @@ class AICharacter(Humanoid):
         generate a complete, detailed character profile.
 
         CONCEPT: "{concept}"
+
+        Based on the character's race, skills, and personality, also generate flavorful text for their actions.
+        For example, a character with claws should 'slash with its talons', not 'punch'.
+        A character with 'Marksmanship' should 'take a well-aimed shot', not 'fire wildly'.
 
         Fill out all fields of the character sheet. The output must be a single, valid JSON object.
         """
@@ -91,6 +100,9 @@ class AICharacter(Humanoid):
             self.motivation = sheet_data.motivation
             self.secret = sheet_data.secret
             self.backstory = sheet_data.backstory
+            self.unarmed_attack_verb = sheet_data.unarmed_attack_verb
+            self.weapon_attack_verb = sheet_data.weapon_attack_verb
+            self.kill_description = sheet_data.kill_description
 
         except Exception as e:
             print(f"Failed to generate AI character from concept: {e}. Applying default fallback values.")
@@ -105,6 +117,9 @@ class AICharacter(Humanoid):
             self.motivation = "To protect John Connor."
             self.secret = "Is a machine from the future."
             self.backstory = "Sent back in time to alter the course of a future war."
+            self.unarmed_attack_verb = "slams its metallic fist into"
+            self.weapon_attack_verb = "coolly fires at"
+            self.kill_description = "terminates the target with cold efficiency."
 
     def _discover_commands(self):
         """Finds all methods decorated with @command."""
@@ -114,80 +129,137 @@ class AICharacter(Humanoid):
                 self.command_descriptions[name] = inspect.getdoc(method) or "No description available."
         print(f"Commands for {self.name} initialized: {list(self.commands.keys())}")
 
-    @command
-    def perform_task(self, arg: str) -> str:
-        """Performs a task related to their profession or a general ship duty."""
-        task = arg or f"duties associated with being a {self.profession}"
-        return f"{self.name} gets to work on {task}."
+    # --- "GOD MODE" & SPECIAL COMMANDS ---
 
     @command
-    def acquire_item(self, arg: str) -> str:
-        """Acquires a new item for personal inventory."""
-        if not arg: return f"{self.name} acquires nothing."
-        self.inventory.add(arg)
-        return f"The item '{arg}' is now in {self.name}'s possession."
+    def heal(self, target_name: str, magnitude: str = 'moderate') -> str:
+        """Heals a target (or self) by name. The amount healed is determined by the AI's chosen magnitude."""
+        if not target_name:
+            return f"{self.name} channels energy, but has no target."
 
-    @command
-    def get_inventory(self, arg: Optional[str] = None) -> str:
-        """Returns a list of items in personal inventory."""
-        items = self.inventory.inventory
-        if not items:
-            return f"{self.name} checks their pockets and finds them empty."
-        return f"{self.name} checks their belongings and finds: {', '.join(items)}."
+        target = next((actor for actor in self.actor_manager.actors.values() if target_name.lower() in actor.name.lower()), None)
 
-    @command
-    def request_status_report(self, arg: Optional[str] = None) -> str:
-        """Asks for a status report on ship systems."""
-        report = self.ship.status_report()
-        system_strings = [f"{name.replace('_', ' ').title()} at {data['health']:.0f}% ({data['status']})" for name, data in report["systems"].items()]
-        status_lines = f"Overall Integrity: {report['integrity']:.0f}%\n- " + "\n- ".join(system_strings)
-        return f"{self.name} checks a console which displays the ship's status:\n{status_lines}"
-
-    @command
-    def punch(self, target: Humanoid) -> str:
-        """Starts a physical altercation with another character."""
         if not target:
+            return f"{self.name} looks for {target_name} but can't find them."
+        if not target.alive:
+            return f"{self.name} attempts to heal {target_name}, but it's too late."
+
+        healing_map = {
+            'minor': random.uniform(10, 25),
+            'moderate': random.uniform(30, 60),
+            'critical': random.uniform(70, 100)
+        }
+        healing_amount = healing_map.get(magnitude.lower(), 40) # Default to moderate
+
+        target.health = min(100, target.health + healing_amount)
+        return f"{self.name} touches {target_name}, and a wave of {magnitude} energy restores them to {target.health:.0f}% health."
+
+    @command
+    def sabotage_ship_system(self, arg: str, magnitude: str = 'moderate') -> str:
+        """Inflicts damage on a specific ship system. Damage is determined by the AI's chosen magnitude."""
+        system_name = arg.lower().strip() if arg else ""
+        if not system_name or system_name not in self.ship.get_systems():
+            return f"{self.name} tries to sabotage a system, but can't find the right one."
+
+        damage_map = {
+            'minor': random.uniform(10, 25),
+            'moderate': random.uniform(30, 50),
+            'critical': random.uniform(60, 90)
+        }
+        damage = damage_map.get(magnitude.lower(), 40) # Default to moderate
+
+        self.ship.apply_damage_to_system(system_name, damage, source=f"internal sabotage by {self.name}")
+        return f"Sparks fly as {self.name} deliberately causes {magnitude} sabotage to the {system_name.replace('_', ' ')} system."
+
+    @command
+    def reveal_truth(self, target_name: str) -> str:
+        """Forces a target character by name to reveal their hidden secret."""
+        if not target_name:
+            return f"{self.name} probes the air for secrets, but finds nothing."
+
+        target = next((actor for actor in self.actor_manager.actors.values() if target_name.lower() in actor.name.lower()), None)
+
+        if not target:
+            return f"{self.name} tries to read the mind of {target_name}, but they are not nearby."
+
+        secret = getattr(target, 'secret', 'a deep secret they have kept hidden until now')
+        return f"Under {self.name}'s intense gaze, {target.name} is compelled to speak the truth, revealing that '{secret}'."
+
+    @command
+    def punch(self, target_name: str) -> str:
+        """Starts a physical altercation. Damage is modified by the 'Strong' core attribute."""
+        if not target_name:
             return f"{self.name} swings at the air, looking foolish."
+
+        target = next((actor for actor in self.actor_manager.actors.values() if target_name.lower() in actor.name.lower()), None)
+
+        if not target:
+            return f"{self.name} looks around for {target_name} but can't find them."
         if not target.alive:
             return f"{self.name} looks at {target.name}'s body but does nothing."
-        target.lose_hp(random.uniform(1, 10))
+
+        damage_modifier = 1.0
+        if self.core_attribute.lower() == 'strong':
+            damage_modifier = 1.75
+
+        base_damage = random.uniform(5, 12)
+        final_damage = base_damage * damage_modifier
+        target.lose_hp(final_damage)
+
         if not target.alive:
-            return f"{self.name} gives a final punch to finish {target.name}, now ragdolling in the ground."
-        places_to_punch = ["jaw", "nose", "stomach", "ribs", "shoulder"]
-        return f"{self.name} punches {target.name} in the {random.choice(places_to_punch)}."
+            return self.kill_description.format(target_name=target.name)
+
+        return f"{self.name} {self.unarmed_attack_verb} {target.name}."
 
     @command
-    def shoot(self, target: Humanoid) -> str:
-        """Uses a personal weapon against another character. A highly aggressive and dangerous act."""
-        if not target:
+    def shoot(self, target_name: str) -> str:
+        """Uses a personal weapon. Damage is modified by the 'Marksmanship' primary skill."""
+        if not target_name:
             return f"{self.name} draws a weapon but has no one to aim at."
+
+        target = next((actor for actor in self.actor_manager.actors.values() if target_name.lower() in actor.name.lower()), None)
+
+        if not target:
+            return f"{self.name} aims their weapon, but can't find {target_name}."
         if not target.alive:
             return f"{self.name} aims their weapon at {target.name}'s body but doesn't fire."
-        damage = random.uniform(15, 50)
-        target.lose_hp(damage)
-        if not target.alive:
-            return f"{self.name} pulls out a concealed weapon and kills {target.name} in a shocking act of violence."
-        else:
-            return f"{self.name} shoots and wounds {target.name}."
 
+        damage_modifier = 1.0
+        if self.primary_skill.lower() == 'marksmanship':
+            damage_modifier = 2.0
+
+        base_damage = random.uniform(15, 50)
+        final_damage = base_damage * damage_modifier
+        target.lose_hp(final_damage)
+
+        if not target.alive:
+            return self.kill_description.format(target_name=target.name)
+        else:
+            return f"{self.name} {self.weapon_attack_verb} {target.name}."
+
+    # --- AI-DRIVEN ACTION METHODS ---
     def get_character_command(self, action_sentence: str, actors_around: List[Humanoid]) -> dict:
         """Analyzes an intended action to map it to a specific command."""
         command_list_str = "\n".join(f'- "{name}": "{desc}"' for name, desc in self.command_descriptions.items())
         entities_nearby = ', '.join(actor.name for actor in actors_around if actor.name != self.name) if actors_around else 'no one else'
+        valid_systems = list(self.ship.get_systems().keys())
 
         prompt = f"""
-        You are a command interpreter for a character in a simulation.
-        Based on the character's intended action, choose the most appropriate command from the list.
-        
+        You are a command interpreter for a character in a simulation. Based on the character's intended action, choose the most appropriate command.
+
         Available Commands:
         {command_list_str}
-        "None": Use if the action is purely observational or internal thought.
+        "None": Use if the action is purely observational, conversational, or internal thought.
 
         Nearby Characters: {entities_nearby}
 
+        **SPECIAL INSTRUCTIONS:**
+        - For `sabotage_ship_system`, the 'arg' MUST be one of these exact system names: {valid_systems}.
+        - For `heal` or `sabotage_ship_system`, you MUST also provide a `magnitude` field: 'minor', 'moderate', or 'critical'.
+        - If the action targets a character (e.g., 'punch Bob'), the 'arg' must be that character's name.
+
         Intended Action: "{action_sentence}"
         
-        If the action targets a character (e.g., 'punch Bob', 'talk to Jane'), the 'arg' must be that character's name.
         Respond with only the JSON object for the best command.
         """
         try:
@@ -199,7 +271,7 @@ class AICharacter(Humanoid):
             return Command.model_validate_json(response.text).model_dump()
         except Exception as e:
             print(f"Error decoding command for {self.name}: {e}")
-            return {"command": "None", "arg": None, "dialogue": action_sentence}
+            return {"command": "None", "arg": None, "dialogue": None}
 
     def act_with_artificial_intelligence(self, action_history: list, actors_around: List[Humanoid]) -> str:
         """Uses generative AI to determine the character's next action."""
@@ -236,7 +308,7 @@ class AICharacter(Humanoid):
             return f"{self.name} pauses, considering their next move."
 
     def act(self, action_history: list, actors_around: List[Humanoid]) -> str:
-        """Orchestrates the character's turn."""
+        """Orchestrates the character's turn, including target and magnitude resolution."""
         print(f"\n--- AI Action Cycle for {self.name} ---")
 
         action_sentence = self.act_with_artificial_intelligence(action_history, actors_around)
@@ -251,11 +323,13 @@ class AICharacter(Humanoid):
             kwargs_to_pass = {}
             arg_value = command_data.get("arg")
 
-            if 'target' in sig.parameters:
-                target_obj = next((actor for actor in actors_around if arg_value and arg_value in actor.name), None)
-                kwargs_to_pass['target'] = target_obj
-            else: # Handles 'arg', 'item', etc.
+            if 'target_name' in sig.parameters:
+                kwargs_to_pass['target_name'] = arg_value
+            elif 'arg' in sig.parameters:
                 kwargs_to_pass['arg'] = arg_value
+
+            if 'magnitude' in sig.parameters:
+                kwargs_to_pass['magnitude'] = command_data.get('magnitude', 'moderate')
 
             command_result = command_to_execute(**kwargs_to_pass)
             dialogue = command_data.get("dialogue")

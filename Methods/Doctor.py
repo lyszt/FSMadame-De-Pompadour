@@ -64,11 +64,11 @@ class Doctor(Humanoid):
 
         healing_amount = random.uniform(20, 40)
         target.health = min(100, int(target.health + healing_amount))
-        return f"{self.name} applies a medical hypospray to {target.name}, who looks visibly relieved as their wounds begin to close."
+        return f"{self.name} applies a medical hypospray to {target.name}, who looks visibly relieved."
 
     @command
     def run_diagnostics(self, target: Humanoid) -> str:
-        """Performs a full diagnostic scan on a crew member to assess their health status."""
+        """Performs a full diagnostic scan on a crew member to assess their health."""
         if not target:
             return f"{self.name} readies their medical scanner but has no one to scan."
         if not target.alive:
@@ -84,68 +84,7 @@ class Doctor(Humanoid):
 
         return f"A medical tricorder buzzes softly as it scans {target.name}. The readout indicates they are in {health_status}."
 
-    # --- Generic Humanoid Commands ---
-    @command
-    def acquire_item(self, item: str) -> str:
-        """Acquires a new item for their medical kit."""
-        if not item:
-            return f"{self.name} considers acquiring something, but decides against it."
-        self.inventory.add(item)
-        return f"{self.name} acquires a '{item}' and carefully places it in their medical kit."
 
-    @command
-    def get_inventory(self) -> str:
-        """Checks their own medical kit."""
-        items = self.inventory.inventory
-        if len(items) < 1:
-            return f"{self.name} checks their medical bag and finds it empty."
-        return f"{self.name} takes stock of their medical supplies: {', '.join(items)}."
-
-    @command
-    def punch(self, target: Humanoid) -> str:
-        """Starts a physical altercation with another crew member."""
-        if not target:
-            return f"{self.name} clenches their fist, but thinks better of it."
-        if not target.alive:
-            return f"{self.name} looks at {target.name}'s body but does nothing."
-        target.lose_hp(random.uniform(1, 10))
-        if not target.alive:
-            return f"{self.name} gives a final punch to finish {target.name}, now ragdolling in the ground."
-        places_to_punch = ["jaw", "nose", "stomach", "ribs", "shoulder", "temple"]
-        return f"{self.name}, in a shocking breach of their oath, punches {target.name} in the {random.choice(places_to_punch)}."
-
-    def accept_order(self, order: str) -> str:
-        """Accepts an order from a superior and stores it for execution."""
-        if not order:
-            return f"{self.name} acknowledges but receives no specific order."
-        self.add_task(order)
-        return f"{self.name} acknowledges the order: '{order}'."
-
-    @command
-    def task_is_completed(self, arg: str) -> str:
-        """Reports that one of their assigned tasks is now completed. The argument must be the exact task string."""
-        task = arg
-        if not self.tasks:
-            return f"{self.name} has no orders to execute."
-        if task not in self.tasks:
-            return f"{self.name} reports on a task, but '{task}' was not in their orders."
-        self.remove_task(task)
-        return f"{self.name} reports they have finished the task: '{task}."
-
-    @command
-    def shoot(self, target: Humanoid) -> str:
-        """Uses a personal weapon against another crew member. A highly aggressive and dangerous act."""
-        if not target:
-            return f"{self.name} fumbles with a weapon, clearly unaccustomed to its use."
-        if not target.alive:
-            return f"{self.name} aims their weapon at {target.name}'s body but lowers it again."
-        damage = random.uniform(15, 50)
-        if target.health - damage <= 0:
-            target.lose_hp(damage)
-            return f"{self.name} fires the weapon with a steady hand, a grim necessity in their eyes, and kills {target.name}."
-        else:
-            target.lose_hp(damage)
-            return f"{self.name} aims for a non-lethal area and shoots to wound {target.name}."
 
     def idle_action(self) -> str:
         """Pulls a random, medical-themed action from a file."""

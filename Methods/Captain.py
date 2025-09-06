@@ -68,33 +68,6 @@ class Captain(Humanoid):
         return "The cargo bay doors open, and all contents are jettisoned into space."
 
     @command
-    def acquire_item(self, item: str) -> str:
-        """Formally acquires a new item for the captain's personal inventory."""
-        if not item:
-            return "The captain thinks about acquiring an item, but doesn't specify what."
-        self.inventory.add(item)
-        return f"The item '{item}' is now in the captain's personal possession."
-
-    @command
-    def remove_item(self, item: str) -> str:
-        """Removes a specific item from the captain's personal inventory."""
-        if not item:
-            return "The captain prepares to discard an item, but then stops."
-        try:
-            self.inventory.remove(item)
-            return f"The captain discards the '{item}' he was carrying."
-        except ValueError:
-            return f"The captain checks his pockets for '{item}' but doesn't have it."
-
-    @command
-    def get_inventory(self) -> str:
-        """Returns a list of items in the captain's personal inventory."""
-        items = self.inventory.inventory
-        if len(items) < 1:
-            return "The captain checks his pockets and finds them empty."
-        return f"The captain checks his personal belongings and finds: {', '.join(items)}."
-
-    @command
     def request_status_report(self) -> str:
         """Asks the ship's computer for a full status report on all major systems."""
         report = self.ship.status_report()
@@ -173,31 +146,6 @@ class Captain(Humanoid):
         except FileNotFoundError:
             return "acknowledges"
 
-    @command
-    def punch(self, target: Humanoid):
-        """Starts a physical altercation with another character."""
-        if not target:
-            return f"{self.name} swings at the air."
-        if not target.alive:
-            return f"{self.name} looks at {target.name}'s body but does nothing."
-        target.lose_hp(random.uniform(1,10))
-        places_to_punch = ["jaw", "nose", "stomach", "ribs", "chest", "shoulder"]
-        return f"{self.name} punches {target.name} right in the {random.choice(places_to_punch)}."
-
-    @command
-    def shoot(self, target: Humanoid):
-        """Uses a personal weapon against another character."""
-        if not target:
-            return f"{self.name} draws a weapon but has no target."
-        if not target.alive:
-            return f"{self.name} aims their weapon at {target.name}'s body but doesn't fire."
-        damage = random.uniform(15,50)
-        if target.health - damage <= 0:
-            target.lose_hp(damage)
-            return f"{self.name} pulled his weapon and killed {target.name}."
-        else:
-            target.lose_hp(damage)
-            return f"{self.name} shot and wounded {target.name}."
 
     def get_captain_command(self, action_sentence: str) -> dict:
         """

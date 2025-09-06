@@ -37,39 +37,6 @@ class Crewman(Humanoid):
                 self.command_descriptions[name] = inspect.getdoc(method) or "No description available."
         print(f"Crewman commands initialized for {self.name}: {list(self.commands.keys())}")
 
-    def accept_order(self, order: str) -> str:
-        """Accepts an order from a superior and stores it for execution."""
-        if not order:
-            return f"{self.name} acknowledges but receives no specific order."
-        self.add_task(order)
-        return f"{self.name} acknowledges the order: '{order}'."
-
-    @command
-    def task_is_completed(self, arg: str) -> str:
-        """Reports that one of their assigned tasks is now completed. The argument must be the exact task string."""
-        task = arg
-        if not self.tasks:
-            return f"{self.name} has no orders to execute."
-        if task not in self.tasks:
-            return f"{self.name} reports on a task, but '{task}' was not in their orders."
-        self.remove_task(task)
-        return f"{self.name} reports they have finished the task: '{task}'."
-
-    @command
-    def acquire_item(self, arg: str) -> str:
-        """Acquires a new item for their personal inventory, viewing it with cynical pragmatism."""
-        if not arg:
-            return f"{self.name} considers acquiring something, but can't decide what."
-        self.inventory.add(arg)
-        return f"{self.name} acquires a '{arg}'. They give it a cursory glance before stowing it away."
-
-    @command
-    def get_inventory(self, arg: Optional[str] = None) -> str:
-        """Checks their own personal inventory."""
-        items = self.inventory.inventory
-        if not items:
-            return f"{self.name} checks their pockets and finds nothing."
-        return f"{self.name} takes stock of their personal belongings: {', '.join(items)}."
 
     @command
     def repair_system(self, arg: str) -> str:
@@ -89,33 +56,6 @@ class Crewman(Humanoid):
 
         new_health = self.ship.get_systems()[system_name]['health']
         return f"{self.name} works on the damaged {system_name.replace('_', ' ')} system, managing to restore it to {new_health:.0f}%."
-
-    @command
-    def punch(self, target: Humanoid) -> str:
-        """Starts a physical altercation with another crew member."""
-        if not target:
-            return f"{self.name} swings at the air, looking foolish."
-        if not target.alive:
-            return f"{self.name} glares at {target.name}'s body but does nothing."
-        target.lose_hp(random.uniform(1, 10))
-        places_to_punch = ["jaw", "nose", "stomach", "ribs", "shoulder"]
-        if not target.alive:
-            return f"{self.name} gives a final punch to finish {target.name}, now ragdolling in the ground."
-        return f"{self.name} punches {target.name} right in the {random.choice(places_to_punch)}."
-
-    @command
-    def shoot(self, target: Humanoid) -> str:
-        """Uses a personal weapon against another crew member. A highly aggressive and dangerous act."""
-        if not target:
-            return f"{self.name} nervously draws a weapon but has no one to aim at."
-        if not target.alive:
-            return f"{self.name} aims their weapon at {target.name}'s body but doesn't fire."
-        damage = random.uniform(15, 50)
-        target.lose_hp(damage)
-        if not target.alive:
-            return f"{self.name} pulls out a concealed weapon and kills {target.name} in a shocking act of violence."
-        else:
-            return f"{self.name} shoots and wounds {target.name}."
 
     def get_crewman_command(self, action_sentence: str, actors_around: List[Humanoid]) -> dict:
         """Analyzes a descriptive action sentence to determine which specific command to execute."""
