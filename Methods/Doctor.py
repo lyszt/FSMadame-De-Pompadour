@@ -11,8 +11,7 @@ from pydantic import BaseModel, Field
 # Assuming these are your local project files
 from .Humanoid import Humanoid
 from .Inventory import Inventory
-from .Environment import Environment
-from .Ship import Ship # Doctor might need to know about the ship environment
+from .Ship import Ship
 
 # Pydantic model to define the structure for the AI's JSON output.
 class Command(BaseModel):
@@ -31,7 +30,7 @@ class Doctor(Humanoid):
     Represents the ship's medical officer, responsible for the health and well-being of the crew.
     The Doctor uses an AI layer to interpret high-level intentions into specific medical actions.
     """
-    def __init__(self, name: str, net_worth: float, age: int, environment: Environment):
+    def __init__(self, name: str, net_worth: float, age: int, environment: 'Environment'):
         """
         Initializes the Doctor instance.
         """
@@ -110,8 +109,28 @@ class Doctor(Humanoid):
         if not target.alive:
             return f"{self.name} looks at {target.name}'s body but does nothing."
         target.lose_hp(random.uniform(1, 10))
+        if not target.alive:
+            return f"{self.name} gives a final punch to finish {target.name}, now ragdolling in the ground."
         places_to_punch = ["jaw", "nose", "stomach", "ribs", "shoulder", "temple"]
         return f"{self.name}, in a shocking breach of their oath, punches {target.name} in the {random.choice(places_to_punch)}."
+
+    def accept_order(self, order: str) -> str:
+        """Accepts an order from a superior and stores it for execution."""
+        if not order:
+            return f"{self.name} acknowledges but receives no specific order."
+        self.add_task(order)
+        return f"{self.name} acknowledges the order: '{order}'."
+
+    @command
+    def task_is_completed(self, arg: str) -> str:
+        """Reports that one of their assigned tasks is now completed. The argument must be the exact task string."""
+        task = arg
+        if not self.tasks:
+            return f"{self.name} has no orders to execute."
+        if task not in self.tasks:
+            return f"{self.name} reports on a task, but '{task}' was not in their orders."
+        self.remove_task(task)
+        return f"{self.name} reports they have finished the task: '{task}."
 
     @command
     def shoot(self, target: Humanoid) -> str:
@@ -213,13 +232,13 @@ class Doctor(Humanoid):
         - Other recent events (what happened around you):
         {other_actions_str}
         - The current ship-wide situation: {self.environment.situation}
-
+        
         ## Your Task
         Based on the events and your role, what is your next action? Prioritize injured crew.
         Your action must be a single, complete sentence in the third person.
         It should be interactive, involving another crewmember if possible.
         Avoid passive or silent actions. Add dialogue using quotations.
-
+        {self.global_prompt}
         Write the complete sentence for {self.name}'s next action now.
         """
         try:

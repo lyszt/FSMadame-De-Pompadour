@@ -20,7 +20,7 @@ class Ship:
         }
         self.name = name
         self.weapon_system: WeaponSystem = WeaponSystem(name="Phaser", accuracy=accuracy)
-        self.relations = Dict[Ship, float] # From 0 to 100
+        self.relations = Dict[Ship, float]
 
     def name_weapon_system(self, name):
         self.weapon_system.name_weapon_system(name)

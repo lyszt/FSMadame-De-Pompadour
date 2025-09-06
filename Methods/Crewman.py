@@ -1,43 +1,29 @@
 import random
 import inspect
-import json
 from typing import Optional, Callable, List
 
-# Ensure you have the necessary libraries installed:
-# pip install google-generativeai pydantic
 from google import genai
 from pydantic import BaseModel, Field
 
-# Assuming these are your local project files
 from .Humanoid import Humanoid
-from .Inventory import Inventory
 from .Ship import Ship
 from .Environment import Environment
 
-# Pydantic model to define the structure for the AI's JSON output.
 class Command(BaseModel):
     command: Optional[str] = Field(None, description="The specific command to be executed from the available list.")
     arg: Optional[str] = Field(None, description="The argument required by the command, such as an item or target name.")
     dialogue: Optional[str] = Field(None, description="A single, impactful line of dialogue for the character to say while performing the action.")
 
-# A simple decorator to mark methods as being available to the AI.
 def command(func: Callable) -> Callable:
     """Decorator to register a method as an AI-callable command."""
     func.is_command = True
     return func
 
 class Crewman(Humanoid):
-    """
-    Represents a jaded and resourceful character drifting through space.
-    Their actions are often cynical and focused on self-preservation,
-    shaped by the harsh realities of the void and driven by an AI command system.
-    """
     def __init__(self, name: str, net_worth: float, age: int, ship: Ship, environment: Environment):
         super().__init__(f"Crewman {name}", age, net_worth)
         self.ship = ship
         self.environment = environment
-
-        # --- AI System Initialization ---
         self.client = genai.Client()
         self.commands = {}
         self.command_descriptions = {}
@@ -51,49 +37,70 @@ class Crewman(Humanoid):
                 self.command_descriptions[name] = inspect.getdoc(method) or "No description available."
         print(f"Crewman commands initialized for {self.name}: {list(self.commands.keys())}")
 
+    def accept_order(self, order: str) -> str:
+        """Accepts an order from a superior and stores it for execution."""
+        if not order:
+            return f"{self.name} acknowledges but receives no specific order."
+        self.add_task(order)
+        return f"{self.name} acknowledges the order: '{order}'."
 
     @command
-    def throw_away_own_stuff(self) -> str:
-        """Empties the entire personal inventory into a disposal chute."""
-        if len(self.inventory.inventory) < 1:
-            return f"{self.name} checks their pockets but finds them empty."
-        self.inventory.empty()
-        return f"{self.name} finds a disposal chute and gets rid of all their personal items. 'Less weight, less problems,' they mutter."
+    def task_is_completed(self, arg: str) -> str:
+        """Reports that one of their assigned tasks is now completed. The argument must be the exact task string."""
+        task = arg
+        if not self.tasks:
+            return f"{self.name} has no orders to execute."
+        if task not in self.tasks:
+            return f"{self.name} reports on a task, but '{task}' was not in their orders."
+        self.remove_task(task)
+        return f"{self.name} reports they have finished the task: '{task}'."
 
     @command
-    def acquire_item(self, item: str) -> str:
+    def acquire_item(self, arg: str) -> str:
         """Acquires a new item for their personal inventory, viewing it with cynical pragmatism."""
-        if not item:
+        if not arg:
             return f"{self.name} considers acquiring something, but can't decide what."
-        self.inventory.add(item)
-        return f"{self.name} acquires a '{item}'. They give it a cursory glance before stowing it away."
+        self.inventory.add(arg)
+        return f"{self.name} acquires a '{arg}'. They give it a cursory glance before stowing it away."
 
     @command
-    def remove_item(self, item: str) -> str:
-        """Removes a specific item from their personal inventory."""
-        if not item:
-            return f"{self.name} thinks about getting rid of an item, but doesn't."
-        try:
-            self.inventory.remove(item)
-            return f"{self.name} discards their '{item}'."
-        except ValueError:
-            return f"{self.name} looks for a '{item}' to discard, but doesn't have one."
-
-    @command
-    def get_inventory(self) -> str:
+    def get_inventory(self, arg: Optional[str] = None) -> str:
         """Checks their own personal inventory."""
         items = self.inventory.inventory
-        if len(items) < 1:
+        if not items:
             return f"{self.name} checks their pockets and finds nothing."
         return f"{self.name} takes stock of their personal belongings: {', '.join(items)}."
+
+    @command
+    def repair_system(self, arg: str) -> str:
+        """Attempts to repair a damaged ship system."""
+        system_name = arg.lower().strip() if arg else ""
+        valid_systems = list(self.ship.get_systems().keys())
+
+        if not system_name or system_name not in valid_systems:
+            return f"{self.name} tinkers with a console but makes no real progress."
+
+        system_health = self.ship.get_systems()[system_name]['health']
+        if system_health >= 100.0:
+            return f"{self.name} inspects the {system_name.replace('_', ' ')} system, finding it's in working order."
+
+        repair_amount = random.uniform(5, 10)
+        self.ship.repair_system(system_name, repair_amount)
+
+        new_health = self.ship.get_systems()[system_name]['health']
+        return f"{self.name} works on the damaged {system_name.replace('_', ' ')} system, managing to restore it to {new_health:.0f}%."
 
     @command
     def punch(self, target: Humanoid) -> str:
         """Starts a physical altercation with another crew member."""
         if not target:
             return f"{self.name} swings at the air, looking foolish."
+        if not target.alive:
+            return f"{self.name} glares at {target.name}'s body but does nothing."
         target.lose_hp(random.uniform(1, 10))
-        places_to_punch = ["jaw", "nose", "stomach", "ribs", "shoulder", "eye", "ear"]
+        places_to_punch = ["jaw", "nose", "stomach", "ribs", "shoulder"]
+        if not target.alive:
+            return f"{self.name} gives a final punch to finish {target.name}, now ragdolling in the ground."
         return f"{self.name} punches {target.name} right in the {random.choice(places_to_punch)}."
 
     @command
@@ -101,55 +108,34 @@ class Crewman(Humanoid):
         """Uses a personal weapon against another crew member. A highly aggressive and dangerous act."""
         if not target:
             return f"{self.name} nervously draws a weapon but has no one to aim at."
+        if not target.alive:
+            return f"{self.name} aims their weapon at {target.name}'s body but doesn't fire."
         damage = random.uniform(15, 50)
-        if target.health - damage <= 0:
-            target.lose_hp(damage)
+        target.lose_hp(damage)
+        if not target.alive:
             return f"{self.name} pulls out a concealed weapon and kills {target.name} in a shocking act of violence."
         else:
-            target.lose_hp(damage)
             return f"{self.name} shoots and wounds {target.name}."
 
-    # --- Original Action Methods (Preserved) ---
-
-    def idle_action(self) -> str:
-        """Pulls a random, mundane space-themed action from a file."""
-        try:
-            with open("Methods/Datasets/crewman_actions.txt", "r") as f:
-                action_list = [line.strip() for line in f if line.strip()]
-            return random.choice(action_list)
-        except FileNotFoundError:
-            return "stares blankly at a bulkhead."
-
-    def against_another_neutral(self) -> str:
-        """Pulls a random neutral action targeting another character."""
-        try:
-            with open("Methods/Datasets/crewman_target_actions_neutral.txt", "r") as f:
-                action_list = [line.strip() for line in f if line.strip()]
-            return random.choice(action_list)
-        except FileNotFoundError:
-            return "gives a slight nod to"
-
-
-    def get_crewman_command(self, action_sentence: str) -> dict:
+    def get_crewman_command(self, action_sentence: str, actors_around: List[Humanoid]) -> dict:
         """Analyzes a descriptive action sentence to determine which specific command to execute."""
         print(f"Deciding command for {self.name}: '{action_sentence}'")
         command_list_str = "\n".join(
             f'- "{name}": "{desc}"' for name, desc in self.command_descriptions.items()
         )
+        valid_systems = list(self.ship.get_systems().keys())
+        entities_nearby = ', '.join(actor.name for actor in actors_around if actor.name != self.name) if actors_around else 'no one else'
 
         prompt = f"""
-        You are a command interpreter for a starship crewman in a simulation. Based on the crewman's intended action, choose the most appropriate command, extract its argument, and create a line of dialogue.
+        You are a command interpreter for a starship crewman in a simulation. Based on the crewman's intended action, choose the most appropriate command.
 
         Available Commands:
         {command_list_str}
-        "None": Use this if the action does not map to any command.
+        "None": Use this if the action is purely conversational, observational, or doesn't map to a command.
 
-        Instructions:
-        1. Analyze the crewman's intended action below.
-        2. If it maps to one of the available commands, identify that command.
-        3. If the command requires an argument (like an item or another crewman's name), extract it for the "arg" field.
-        4. Generate a single, in-character line of dialogue for the crewman that fits the action. Place it in the "dialogue" field.
-        5. If the action is conversational or doesn't match any command, return "None" for the command.
+        Nearby Characters: {entities_nearby}
+        
+        **Crucially, for `repair_system`, the 'arg' MUST be an exact string from the valid systems list.**
 
         Intended Action: "{action_sentence}"
 
@@ -180,48 +166,42 @@ class Crewman(Humanoid):
         other_actions_str = "\n".join(f"- {action}" for action in other_recent_actions) if other_recent_actions else "None"
         entities_nearby = ', '.join(actor.name for actor in actors_around if actor.name != self.name) if actors_around else 'no one else'
 
+        system_status_report = self.ship.status_report()
+        system_strings = [f"{name}: {data['health']:.0f}% ({data['status']})" for name, data in system_status_report["systems"].items()]
+        system_status_str = ", ".join(system_strings)
+
         prompt = f"""
         You are a character in a text-based simulation aboard the French military starship, FS Madame de Pompadour.
         Your name is {self.name}.
+        Your personality traits are: {self.personality}
         
-        ## Your Role and Context
-        You are one of the many enlisted crewmembers on the lower decks, the "common folk" of the ship. You wear a standard-issue uniform,
-         performing the day-to-day tasks that keep the vessel operational. Your life is a routine of 
-         duties, shared mess halls, and cramped corridors filled with your fellow crew.
-          You are not an officer or a specialist; you are part of the ship's essential rank-and-file.
-         To your benefit, or not, your personality traits are: {self.personality}
-         
         ## Current Situation
+        - Ship Systems Status: {system_status_str}
         - Crewmembers nearby: {entities_nearby}
         - Your recent actions (what you did):
         {my_actions_str}
         - Other recent events (what happened around you):
         {other_actions_str}
         - The current ship-wide situation: {self.environment.mood}
-
-        ## Your Task
-        Based on the events listed above and your role as a standard crewman, what do you do next? 
-        Your action should be something a typical person in your position might do. It could be related
-         to a simple ship duty, a mundane reaction to a crewmate, or a personal act while moving through the ship.
-         The ship's mission: {self.environment.mission}
+        - The ship's mission: {self.environment.mission}
+        {self.global_prompt}
         
-        The response must be a single, complete sentence in the third person describing your character's
-        action. Do not add any extra explanation.
-        Your action should be interactive and reflect your life. It should involve another 
-        crewmember if possible, focusing on conversation, shared tasks, or simple social exchanges. 
-        Avoid passive or silent actions where you don't interact with anyone.
-        Add dialogues using quotations.
+        ## Your Task
+        Based on the situation (especially any assigned tasks or damaged ship systems), what is your next action?
+        The response must be a single, complete sentence in the third person describing your action.
+        It should be interactive and involve another crewmember or a ship system if possible. 
+        Add dialogue using quotations where appropriate.
 
         Write the complete sentence for {self.name}'s next action now.
         """
         try:
             response = self.client.models.generate_content(
-                model="gemini-2.0-flash-lite", contents=prompt
+                model="gemini-2.5-flash", contents=prompt
             )
             return response.text.strip()
         except Exception as e:
-            print(f"AI action failed for {self.name}: {e}. Falling back to default idle action.")
-            return f"{self.name} {self.idle_action()}."
+            print(f"AI action failed for {self.name}: {e}.")
+            return f"{self.name} stares blankly at a bulkhead."
 
     def act(self, actors_around: list, action_history: list) -> str | None:
         """Decides the next action, choosing between a simple action or a more complex, AI-driven action."""
@@ -235,9 +215,9 @@ class Crewman(Humanoid):
         )
 
         if not action_sentence:
-            return f"{self.name} {self.idle_action()}."
+            return f"{self.name} stares blankly at a bulkhead."
 
-        command_data = self.get_crewman_command(action_sentence)
+        command_data = self.get_crewman_command(action_sentence, actors_around)
         command_name = command_data.get("command")
 
         if command_name and command_name in self.commands:
@@ -249,12 +229,9 @@ class Crewman(Humanoid):
             arg_value = command_data.get("arg")
 
             if 'target' in sig.parameters:
-                target_name_part = arg_value.split()[-1] if arg_value else "" # Try to get the name
-                target_obj = next((actor for actor in actors_around if target_name_part in actor.name), None)
+                target_obj = next((actor for actor in actors_around if arg_value and arg_value.lower() in actor.name.lower()), None)
                 kwargs_to_pass['target'] = target_obj
-            elif 'item' in sig.parameters:
-                kwargs_to_pass['item'] = arg_value
-            elif 'arg' in sig.parameters:
+            else:
                 kwargs_to_pass['arg'] = arg_value
 
             command_result = command_to_execute(**kwargs_to_pass)
@@ -268,8 +245,12 @@ class Crewman(Humanoid):
                 clean_dialogue = dialogue.strip().strip('"')
                 final_narrative += f' "{clean_dialogue}"'
 
-            final_narrative += f" {command_result}"
+            if command_result and command_result not in final_narrative:
+                final_narrative += f" ({command_result})"
+
             return final_narrative
         else:
             print(f"No specific command mapped for {self.name}. Using generated sentence as action.")
             return action_sentence
+
+

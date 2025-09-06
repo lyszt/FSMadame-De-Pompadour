@@ -10,9 +10,10 @@ from pydantic import BaseModel, Field
 
 # Assuming these are your local project files
 from .Humanoid import Humanoid
+from .Lieutenant import Lieutenant
+from .Doctor import Doctor
 from .Inventory import Inventory
 from .Ship import Ship
-from .Environment import Environment # Assuming Environment class is in this file
 
 
 # Pydantic model to define the structure for the AI's JSON output.
@@ -33,7 +34,7 @@ class Captain(Humanoid):
     Represents the commanding officer of a starship, a figure of authority and strategic thinking.
     The Captain uses an AI layer to interpret high-level intentions into specific, executable commands.
     """
-    def __init__(self, name: str, net_worth: float, age: int, ship_command: Ship, environment: Environment):
+    def __init__(self, name: str, net_worth: float, age: int, ship_command: Ship, environment: 'Environment'):
         """
         Initializes the Captain instance.
         """
@@ -43,7 +44,6 @@ class Captain(Humanoid):
         self.client = genai.Client()
         self.environment = environment
 
-        # Dictionaries to hold the discovered commands and their descriptions
         self.commands = {}
         self.command_descriptions = {}
         self._discover_commands()
@@ -111,6 +111,10 @@ class Captain(Humanoid):
         system_name = arg.lower() if arg else ""
         if not system_name or system_name not in self.ship.get_systems().keys():
             return "The chief engineer responds that the order was unclear."
+        for crewman in self.ship.crew:
+            if isinstance(crewman, 'Crewman'):
+                crewman.tasks.append("Repair the ship.")
+
         return f"An order is dispatched to engineering to prioritize repairs on the {system_name.replace('_', ' ')} system."
 
     @command

@@ -4,10 +4,10 @@ from typing import List, Optional, Callable, Dict, Any
 from google import genai
 from pydantic import BaseModel, Field
 
-# Assuming these classes are in the same directory or accessible via path
 from .Ship import Ship
 from .Humanoid import Humanoid
 from .Critic import Critic
+from .AICharacter import AICharacter
 
 class Command(BaseModel):
     command: Optional[str] = Field(None, description="The specific environmental command to be executed from the available list.")
@@ -20,13 +20,14 @@ def command(func: Callable) -> Callable:
     return func
 
 class Environment:
-    def __init__(self, main_ship: Ship, ships_sector: List[Ship] = None):
+    def __init__(self, main_ship: Ship, actor_manager, ships_sector: List[Ship] = None):
         if ships_sector is None:
             ships_sector = []
         self.main_ship: Ship = main_ship
         self.mood = "Regular"
         self.planet = None
         self.anomalies: List[str] = []
+        self.actor_manager: 'ActorManager' = actor_manager
         self.ships_sector: List[Ship] = ships_sector
         self.situation = None
         self.mission = None
@@ -34,9 +35,6 @@ class Environment:
         self.commands = {}
         self.command_descriptions = {}
         self._discover_commands()
-
-        # Instantiate the Critic, passing the client for efficiency.
-        # This assumes your Critic.__init__ can accept the client.
         self.critic = Critic()
 
     def _discover_commands(self):
@@ -47,7 +45,6 @@ class Environment:
                 self.command_descriptions[name] = inspect.getdoc(method) or "No description available."
         print(f"Environment commands initialized: {list(self.commands.keys())}")
 
-    # --- All @command methods remain the same ---
     @command
     def trigger_system_malfunction(self, arg: str) -> str:
         """Causes a random or specified system on the main ship to take minor damage from an external event."""
@@ -116,20 +113,69 @@ class Environment:
 
     @command
     def environment_possess_character(self, arg: Optional[str] = None) -> str:
-        """An unknown influence takes over a crew member's personality."""
+        """An unknown influence takes over a crew member. If an arg (a trait) is provided, it's added. Otherwise, their personality is completely rewritten with new, random traits."""
         living_crew = [c for c in self.main_ship.crew if c.alive]
-        if not living_crew: return "An unseen presence drifts through the empty corridors."
+        if not living_crew:
+            return "An unseen presence drifts through the empty corridors."
+
         target = random.choice(living_crew)
-        # This implementation can be expanded as before
-        return f"{target.name} suddenly clutches their head, their eyes glazing over. They look up, a completely different person."
 
+        old_personality_list = getattr(target, 'personality_traits', getattr(target, 'personality', []))
+        old_personality = list(old_personality_list)
 
-    # --- NEW AND REFACTORED AI LOGIC ---
+        if arg:
+            if arg not in old_personality_list:
+                old_personality_list.append(arg)
+                return f"{target.name} shudders as a strange energy passes through them, seemingly adding a new, troubling trait to their personality: '{arg}'."
+            else:
+                return f"{target.name} feels a strange influence but manages to resist any change."
+
+        try:
+            with open("Methods/Datasets/personality_traits.txt", "r") as f:
+                personality_list = [line.strip() for line in f if line.strip()]
+
+            new_personality = []
+            while len(new_personality) != 3:
+                random_trait = random.choice(personality_list)
+                if random_trait not in new_personality:
+                    new_personality.append(random_trait)
+
+            if hasattr(target, 'personality_traits'):
+                target.personality_traits = new_personality
+            elif hasattr(target, 'personality'):
+                target.personality = new_personality
+
+            return f"{target.name} suddenly clutches their head, their eyes glazing over. They look up, a completely different person. Their personality has shifted from {old_personality} to {new_personality}."
+        except FileNotFoundError:
+            print("Warning: personality_traits.txt not found for possession event.")
+            return f"{target.name} stares blankly for a moment, then shakes their head as if nothing happened."
+
+    @command
+    def create_new_character(self, arg: Optional[str] = None) -> str:
+        """Creates a new, fully-realized AI character and adds them to the simulation. The argument is a brief concept, e.g., 'a grizzled ex-marine security officer'."""
+        concept = arg or "an interesting new crew member with a surprising secret"
+        try:
+            new_character = AICharacter(
+                concept=concept,
+                ship=self.main_ship,
+                environment=self
+            )
+
+            if new_character.name == "T-800" and new_character.profession == "Infiltrator":
+                return "Ship records indicate a new crew transfer is pending, but the data is corrupted."
+
+            self.main_ship.crew.append(new_character)
+            self.actor_manager.add(new_character)
+
+            return f"A new crew member, {new_character.name}, has been assigned to the FS Madame de Pompadour. {new_character.backstory}"
+        except Exception as e:
+            print(f"Failed to instantiate AICharacter: {e}")
+            return "An error occurred while processing a new crew transfer, the details were lost."
 
     def _get_current_environment_state(self, action_history: list) -> Dict[str, Any]:
         """Gathers the current state of the simulation into a dictionary for the AIs."""
         ship_status = ", ".join([f"{k}: {v['status']}" for k, v in self.main_ship.systems.items()])
-        character_profiles = {c.name: c.personality for c in self.main_ship.crew if c.alive}
+        character_profiles = {c.name: getattr(c, 'personality_traits', getattr(c, 'personality', [])) for c in self.main_ship.crew if c.alive}
         return {
             "action_history": action_history,
             "ship_status": ship_status,
@@ -187,7 +233,7 @@ class Environment:
             return revised_event
         except Exception as e:
             print(f"Storyteller revision failed: {e}")
-            return pitch # Fallback to the original pitch on error
+            return pitch
 
     def get_environment_command(self, event_idea: str) -> dict:
         """Analyzes a narrative idea and maps it to a specific environmental command."""
@@ -199,6 +245,16 @@ class Environment:
         Available Commands:
         {command_list_str}
         "None": Use this if the event does not map to any command.
+
+        **Special Instructions for `create_new_character`:**
+        If the event describes the introduction of a new person, you MUST choose the `create_new_character` command.
+        The "arg" field for this command must be a rich, descriptive concept for the AI to build from.
+        Extract as much detail as possible from the event description, covering attributes like:
+        - Profession (e.g., 'grizzled ex-marine')
+        - Personality (e.g., 'cynical and paranoid')
+        - Backstory (e.g., 'sole survivor of a pirate attack')
+        - Appearance (e.g., 'has a prominent scar over one eye')
+        - Secret or Motivation (e.g., 'is secretly searching for a lost family member')
 
         Event Description: "{event_idea}"
 
@@ -247,7 +303,7 @@ class Environment:
             self.situation = f"{narrative_description} {command_result}"
 
             # podcast = self.critic.generate_podcast_segment(self.situation)
-            # print(f"\n--- Cahiers du Cosmos ---\n{podcast}\n-------------------------\n")
+            # print(f"\n--- Cahiers du Cosmos --\n{podcast}\n-------------------------\n")
 
             return self.situation
         else:
@@ -267,3 +323,4 @@ class Environment:
             "to seek out new life and new civilizations, "
             "to boldly go where no one has gone before."
         )
+

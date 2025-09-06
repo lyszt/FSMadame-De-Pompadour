@@ -9,7 +9,6 @@ from pydantic import BaseModel, Field
 from .Humanoid import Humanoid
 from .Inventory import Inventory
 from .Ship import Ship
-from .Environment import Environment
 
 
 class Command(BaseModel):
@@ -32,9 +31,9 @@ class Lieutenant(Humanoid):
     Note: Personality is not set here; it is provided externally.
     """
 
-    def __init__(self, name: str, net_worth: float, age: int, ship_command: Ship, environment: Environment):
+    def __init__(self, name: str, net_worth: float, age: int, ship_command: Ship, environment: 'Environment'):
         self.ship: Ship = ship_command
-        self.environment: Environment = environment
+        self.environment: 'Environment' = environment
 
         super().__init__(f"Lieutenant {name}", age, net_worth)
 
@@ -62,53 +61,24 @@ class Lieutenant(Humanoid):
         """Accepts an order from the captain and stores it for execution (uses inherited self.tasks)."""
         if not order:
             return f"{self.name} acknowledges but receives no specific order."
-        self.tasks.append(order)
+        self.add_task(order)
         return f"{self.name} acknowledges the captain's order: '{order}'."
 
-    @command
-    def review_orders(self) -> str:
-        """Reviews all pending orders received from the captain."""
-        if not self.tasks:
-            return f"{self.name} has no pending orders."
-        return f"{self.name} reviews pending orders: {', '.join(self.tasks)}."
 
     @command
-    def execute_next_order(self) -> str:
+    def task_is_completed(self, task) -> str:
         """Executes the next pending order from the captain."""
         if not self.tasks:
             return f"{self.name} has no orders to execute."
-        current_order = self.tasks.pop(0)
-        return f"{self.name} sets about executing the order: '{current_order}'."
+        self.remove_task(task)
+        return f"{self.name} has finished: '{task}'."
 
-    @command
-    def rally_crew(self) -> str:
-        """Motivates or directs nearby crew for immediate action."""
-        phrases = [
-            "shouts encouragement to the crew",
-            "orders the officers to hold their positions",
-            "directs a team to reinforce the shields",
-            "leads by example, moving quickly to the front"
-        ]
-        return f"{self.name} {random.choice(phrases)}."
-
-    @command
-    def lead_away_team(self, destination: str) -> str:
-        """Leads a small away team to a specified location."""
-        if not destination:
-            return f"{self.name} prepares an away team but has no destination."
-        return f"{self.name} organizes an away team and heads toward {destination}."
-
-    @command
     def assist_repairs(self, system: str) -> str:
         """Personally assists the engineering crew with repairing a system."""
         if not system or system not in self.ship.get_systems().keys():
             return f"{self.name} offers to help, but the repair target is unclear."
         return f"{self.name} joins engineering crews to expedite repairs on the {system.replace('_', ' ')}."
 
-    @command
-    def take_command(self) -> str:
-        """Assumes temporary command if the captain is unavailable."""
-        return f"{self.name} takes the captain's chair and assumes command of the bridge."
 
     @command
     def idle_action(self) -> str:
@@ -120,10 +90,6 @@ class Lieutenant(Humanoid):
             "shares a quick word with the helm officer"
         ]
         return f"{self.name} {random.choice(options)}."
-
-    # --------------------------
-    # Inventory Commands (explicit Inventory usage)
-    # --------------------------
 
     @command
     def acquire_item(self, item: str) -> str:
@@ -200,10 +166,6 @@ class Lieutenant(Humanoid):
         else:
             target.lose_hp(damage)
             return f"{self.name} shot and wounded {target.name}."
-
-    # --------------------------
-    # AI Action Cycle
-    # --------------------------
 
     def get_lieutenant_command(self, action_sentence: str) -> dict:
         """
@@ -284,7 +246,7 @@ class Lieutenant(Humanoid):
         2. If no orders are pending, take tactical initiative: motivate crew, assist repairs, or lead a team.
         3. Avoid redundant requests for information; prefer decisive execution.
         4. Always move the situation forward.
-
+        {self.global_prompt}
         Write the complete sentence for {self.name}'s next action now.
         """
         try:

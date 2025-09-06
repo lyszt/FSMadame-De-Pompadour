@@ -20,7 +20,7 @@ class ActorManager:
     def __init__(self):
         self.actors: Dict[UUID, Humanoid] = {}
         self.ship = Ship(crew=list(self.actors.values()),name="La Madame de Pompadour", accuracy=.5)
-        self.environment: Environment = Environment(main_ship=self.ship, ships_sector=None)
+        self.environment: Environment = Environment(main_ship=self.ship, ships_sector=None, actor_manager=self)
         self.captain = Captain(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship_command=self.ship, environment=self.environment)
 
 

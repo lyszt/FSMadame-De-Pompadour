@@ -14,6 +14,10 @@ class Humanoid:
         self.health: float = 100.0
         self.inventory: Inventory = Inventory()
         self.tasks = []
+        self.captain_task = f"Your superiors have given you a task: {self.tasks}" if len(self.tasks) > 0 else ""
+        self.global_prompt = """
+        
+        """
         with open("Methods/Datasets/personality_traits.txt", "r") as f:
             personality_list = [line.strip() for line in f if line.strip()]
         self.personality = []
@@ -44,3 +48,18 @@ class Humanoid:
         self.health -= amount
         if self.health <= 0:
             self.alive = False
+
+    def add_task(self, task):
+        self.tasks.append(task)
+        self.captain_task = f"Your superiors have given you tasks: {self.tasks}" if len(self.tasks) > 0 else ""
+        self.global_prompt = f"""
+            {self.captain_task}
+        """
+
+    def remove_task(self, choice):
+       if choice in self.tasks:
+           self.tasks.remove(choice)
+       self.captain_task = f"Your superiors have given you tasks: {self.tasks}" if len(self.tasks) > 0 else ""
+       self.global_prompt = f"""
+            {self.captain_task}
+        """
