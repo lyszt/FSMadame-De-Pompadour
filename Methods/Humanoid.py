@@ -1,7 +1,7 @@
 import random
 import uuid
 from abc import abstractmethod
-from typing import Callable
+from typing import Callable, Optional
 
 from .Inventory import Inventory
 
@@ -12,7 +12,7 @@ def command(func: Callable) -> Callable:
 
 
 class Humanoid:
-    def __init__(self, name: str, age: int, net_worth: float, actor_manager):
+    def __init__(self, name: str, age: int, net_worth: float, actor_manager: 'ActorManager'):
         self.id: uuid = uuid.uuid4()
         self.name: str = name
         self.age: int = age
@@ -23,9 +23,8 @@ class Humanoid:
         self.tasks = []
         self.actor_manager = actor_manager
         self.captain_task = f"Your superiors have given you a task: {self.tasks}" if len(self.tasks) > 0 else ""
-        self.global_prompt = """
-        
-        """
+        self.global_prompt = ""
+
         with open("Methods/Datasets/personality_traits.txt", "r") as f:
             personality_list = [line.strip() for line in f if line.strip()]
         self.personality = []
@@ -37,17 +36,6 @@ class Humanoid:
         if "Forgettable" in self.personality or "addict" in self.personality:
             self.memory_depth -= 5
 
-
-
-    def meow(self) -> str:
-            return f"{self.name} is meowing."
-
-    @abstractmethod
-    def idle_action(self):
-        pass
-    @abstractmethod
-    def against_another_neutral(self):
-        pass
     @abstractmethod
     def act(self, actors_around: list, action_history: list):
         pass
@@ -57,20 +45,16 @@ class Humanoid:
         if self.health <= 0:
             self.alive = False
 
-    def add_task(self, task):
+    def add_task(self, task: str):
         self.tasks.append(task)
         self.captain_task = f"Your superiors have given you tasks: {self.tasks}" if len(self.tasks) > 0 else ""
-        self.global_prompt = f"""
-            {self.captain_task}
-        """
+        self.global_prompt = f"\n{self.captain_task}\n"
 
-    def remove_task(self, choice):
-       if choice in self.tasks:
-           self.tasks.remove(choice)
-       self.captain_task = f"Your superiors have given you tasks: {self.tasks}" if len(self.tasks) > 0 else ""
-       self.global_prompt = f"""
-            {self.captain_task}
-        """
+    def remove_task(self, task: str):
+        if task in self.tasks:
+            self.tasks.remove(task)
+        self.captain_task = f"Your superiors have given you tasks: {self.tasks}" if len(self.tasks) > 0 else ""
+        self.global_prompt = f"\n{self.captain_task}\n" if self.tasks else ""
 
     @command
     def punch(self, target_name: str) -> str:
@@ -110,41 +94,32 @@ class Humanoid:
         else:
             return f"{self.name} shoots and wounds {target.name}."
 
-
     @command
-    def acquire_item(self, item: str) -> str:
-        """Acquires a new item for their medical kit."""
+    def acquire_item(self, arg: str) -> str:
+        """Acquires a new item for personal inventory."""
+        item = arg
         if not item:
             return f"{self.name} considers acquiring something, but decides against it."
         self.inventory.add(item)
-        return f"{self.name} acquires a '{item}' and carefully places it in their medical kit."
+        return f"{self.name} acquires a '{item}'."
 
     @command
-    def get_inventory(self) -> str:
-        """Checks their own medical kit."""
+    def get_inventory(self, arg: Optional[str] = None) -> str:
+        """Checks their own inventory."""
         items = self.inventory.inventory
-        if len(items) < 1:
-            return f"{self.name} checks their medical bag and finds it empty."
-        return f"{self.name} takes stock of their medical supplies: {', '.join(items)}."
-
-
+        if not items:
+            return f"{self.name} checks their pockets and finds them empty."
+        return f"{self.name} takes stock of their belongings: {', '.join(items)}."
 
     @command
-    def use_item(self, item: str) -> str:
+    def use_item(self, arg: str) -> str:
         """Uses an item from inventory in a contextual, narrative way."""
+        item = arg
         if not item:
             return f"{self.name} considers using a tool but doesn't pick one."
         if item not in self.inventory.inventory:
-            return f"{self.name} can't use '{item}'—it's not in the kit."
-        return f"{self.name} uses the '{item}' as needed for the situation."
-
-
-    def accept_order(self, order: str) -> str:
-        """Accepts an order from a superior and stores it for execution."""
-        if not order:
-            return f"{self.name} acknowledges but receives no specific order."
-        self.add_task(order)
-        return f"{self.name} acknowledges the order: '{order}'."
+            return f"{self.name} can't use '{item}'—it's not in their inventory."
+        return f"{self.name} uses the '{item}'."
 
     @command
     def task_is_completed(self, arg: str) -> str:
@@ -155,4 +130,4 @@ class Humanoid:
         if task not in self.tasks:
             return f"{self.name} reports on a task, but '{task}' was not in their orders."
         self.remove_task(task)
-        return f"{self.name} reports they have finished the task: '{task}."
+        return f"{self.name} reports they have finished the task: '{task}'."

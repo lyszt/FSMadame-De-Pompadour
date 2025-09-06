@@ -86,9 +86,47 @@ class Captain(Humanoid):
             return "The chief engineer responds that the order was unclear."
         for crewman in self.ship.crew:
             if isinstance(crewman, 'Crewman'):
-                crewman.tasks.append("Repair the ship.")
-
+                crewman.add_task("Repair the ship.")
         return f"An order is dispatched to engineering to prioritize repairs on the {system_name.replace('_', ' ')} system."
+
+
+    @command
+    def give_order(self, arg: str) -> str:
+        """Issues a direct order to a specific crew member. The argument must be formatted as 'Name, Order Text'."""
+        if not arg or ',' not in arg:
+            return "The Captain's order was unclear or lacked a specific target."
+
+        try:
+            target_name, order_text = [part.strip() for part in arg.split(',', 1)]
+        except ValueError:
+            return "The order was improperly formatted. It should be 'Name, Order'."
+
+        target_agent = next((actor for actor in self.actor_manager.actors.values() if target_name.lower() in actor.name.lower()), None)
+
+        if not target_agent:
+            return f"The Captain issues an order, but no one named '{target_name}' is on the crew roster."
+
+        target_agent.add_task(order_text)
+        return f"An order is dispatched to {target_name}: '{order_text}'."
+
+    @command
+    def go_to_red_alert(self, arg: Optional[str] = None) -> str:
+        """Places the ship on Red Alert, ordering all hands to battle stations."""
+        task = "Man your battle station"
+        for crew_member in self.ship.crew:
+            if crew_member.alive:
+                crew_member.add_task(task)
+        return "Klaxons blare throughout the ship as it goes to Red Alert."
+
+    @command
+    def stand_down(self, arg: Optional[str] = None) -> str:
+        """Cancels a Red Alert, returning the ship to normal operations."""
+        task_to_remove = "Man your battle station"
+        for crew_member in self.ship.crew:
+            if task_to_remove in crew_member.tasks:
+                crew_member.remove_task(task_to_remove)
+        return "The alert is cancelled. The crew stands down."
+
 
     @command
     def fire_weapons(self, arg: str) -> str:
