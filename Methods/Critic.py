@@ -106,7 +106,11 @@ class Critic:
         4. Act according to your mood.
         5. Provide a score from 0 to 10 in float to score
         6. After providing the score, provide a 'subjective_bias' score from -3.0 to +3.0 that reflects how much the pitch personally appeals to your character's personality
-        
+    
+        Your single most important job is to ensure the story is cohesive. Before all else, analyze the storyteller's pitch and compare it to the "Recent Events" and "OUR RECENT CONVERSATION".
+        - If the pitch is a logical continuation of what just happened, proceed with your normal review.
+        - If the pitch is a random, disconnected event that ignores the current situation (a "non sequitur"), you MUST reject it.
+        - In case of a continuity error, your score must be very low (0-2), and your revised pitch must explain the error and suggest an alternative that follows the current plot. This directive OVERRULES your personality and mood. A chaotic personality still cannot approve a story that makes no sense.
         Your final output must be a single JSON object containing only the keys specified in these instructions.
         """
 

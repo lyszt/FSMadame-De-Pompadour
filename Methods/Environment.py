@@ -73,17 +73,8 @@ class Environment:
         return f"A minor environmental event occurs: {event_description}."
 
     @command
-    def generate_new_anomaly(self, arg: Optional[str] = None) -> str:
-        """Discovers a new, previously unknown spatial anomaly on long-range scans."""
-        prompt = "Invent a name and a one-sentence description for a strange spatial anomaly. Example: 'A chroniton-flux field.' Respond with only the name and description."
-        try:
-            response = self.client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
-            new_anomaly = response.text.strip()
-            self.anomalies.append(new_anomaly)
-            return f"Sensors have detected a new, strange phenomenon: {new_anomaly}"
-        except Exception as e:
-            print(f"AI anomaly generation failed: {e}")
-            return "Sensors detect a minor, unclassified energy reading."
+    def set_anomaly(self, anomaly):
+        self.anomalies = anomaly
 
     @command
     def set_mood(self, arg: str) -> str:
@@ -196,6 +187,7 @@ class Environment:
         You are a passionate, creative 'Storyteller' AI. Your goal is to create interesting narrative events.
         Based on the current state of the simulation, propose the next event.
         Keep it concise (1-2 sentences). This is just the initial pitch for your Critic.
+        
 
         CURRENT STATE:
         {state_summary}

@@ -54,14 +54,13 @@ class ActorManager:
         return random.choice(list(self.actors.values()))
 
     def act_randomnly(self, action_history) -> Any:
-
+        if len(action_history) == 1:
+            return self.environment.introduce()
         if len(action_history) > 2 and "Captain" in action_history[-1] and all("ENVIRONMENT" not in action for action in action_history[-5:]):
             return self.environment.act(action_history)
         if not self.actors:
             raise Exception("You must populate the actor manager before making an action.")
         if len(action_history) == 0:
-            return self.environment.introduce()
-        if len(action_history) == 1:
             return self.captain.set_initial_mission(list(self.actors.values()), action_history)
         else:
             if all(self.captain.name not in action for action in action_history[-5:]):

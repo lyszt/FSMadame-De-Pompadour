@@ -41,8 +41,9 @@ class Crewman(Humanoid):
     @command
     def repair_system(self, arg: str) -> str:
         """Attempts to repair a damaged ship system."""
-        system_name = arg.lower().strip() if arg else ""
+        system_name = arg.lower().strip().replace(" ", "_") if arg else ""
         valid_systems = list(self.ship.get_systems().keys())
+        print(f"Ai tried to fix: {arg}")
 
         if not system_name or system_name not in valid_systems:
             return f"{self.name} tinkers with a console but makes no real progress."
