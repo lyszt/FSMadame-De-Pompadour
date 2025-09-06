@@ -76,7 +76,7 @@ class Crewman(Humanoid):
 
         Nearby Characters: {entities_nearby}
         
-        **Crucially, for `repair_system`, the 'arg' MUST be an exact string from the valid systems list.**
+        **Crucially, for `repair_system`, the 'arg' MUST be one of these exact system names: {valid_systems}.**
 
         Intended Action: "{action_sentence}"
 
@@ -97,6 +97,7 @@ class Crewman(Humanoid):
         except Exception as e:
             print(f"Error decoding command from LLM for {self.name}: {e}")
             return {"command": "None", "arg": None, "dialogue": None}
+
 
     def act_with_artificial_intelligence(self, actors_around: list, action_history: list, actions: list) -> str:
         """Uses a generative AI to determine the next action based on personality and recent events."""
