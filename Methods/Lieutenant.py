@@ -31,11 +31,11 @@ class Lieutenant(Humanoid):
     Note: Personality is not set here; it is provided externally.
     """
 
-    def __init__(self, name: str, net_worth: float, age: int, ship_command: Ship, environment: 'Environment'):
+    def __init__(self, name: str, net_worth: float, age: int, ship_command: Ship, environment: 'Environment', actor_manager):
         self.ship: Ship = ship_command
         self.environment: 'Environment' = environment
 
-        super().__init__(f"Lieutenant {name}", age, net_worth)
+        super().__init__(f"Lieutenant {name}", age, net_worth, actor_manager)
 
         self.client = genai.Client()
 

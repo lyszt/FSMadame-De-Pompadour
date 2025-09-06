@@ -34,12 +34,12 @@ class Captain(Humanoid):
     Represents the commanding officer of a starship, a figure of authority and strategic thinking.
     The Captain uses an AI layer to interpret high-level intentions into specific, executable commands.
     """
-    def __init__(self, name: str, net_worth: float, age: int, ship_command: Ship, environment: 'Environment'):
+    def __init__(self, name: str, net_worth: float, age: int, ship_command: Ship, environment: 'Environment', actor_manager):
         """
         Initializes the Captain instance.
         """
         self.ship: Ship = ship_command
-        super().__init__(f"Captain {name}", age, net_worth)
+        super().__init__(f"Captain {name}", age, net_worth, actor_manager)
 
         self.client = genai.Client()
         self.environment = environment

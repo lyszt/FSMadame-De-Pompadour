@@ -21,7 +21,7 @@ class ActorManager:
         self.actors: Dict[UUID, Humanoid] = {}
         self.ship = Ship(crew=list(self.actors.values()),name="La Madame de Pompadour", accuracy=.5)
         self.environment: Environment = Environment(main_ship=self.ship, ships_sector=None, actor_manager=self)
-        self.captain = Captain(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship_command=self.ship, environment=self.environment)
+        self.captain = Captain(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship_command=self.ship, environment=self.environment, actor_manager=self)
 
 
     def add(self, actor: Humanoid):
@@ -29,13 +29,13 @@ class ActorManager:
 
     def populate(self, population: int):
         for i in range(population):
-            NPC: Crewman = Crewman(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship=self.ship, environment=self.environment)
-            self.actors[NPC.id] = (NPC)
+            NPC: Crewman = Crewman(name=f'{NameGenerator().generate_name()}', age=random.randint(0,110), net_worth=random.uniform(0, 1e9), ship=self.ship, environment=self.environment, actor_manager=self)
+            self.actors[NPC.id] = NPC
         self.actors[self.captain.id] = self.captain
         # Essential archetypes
-        doc: Doctor = Doctor(name=NameGenerator().generate_name(), age=random.randint(0,110), net_worth=random.uniform(0, 1e9), environment=self.environment)
+        doc: Doctor = Doctor(name=NameGenerator().generate_name(), age=random.randint(0,110), net_worth=random.uniform(0, 1e9), environment=self.environment, actor_manager=self)
         self.actors[doc.id] = doc
-        lieutenant: Lieutenant = Lieutenant(name=NameGenerator().generate_name(), age=random.randint(0,110), net_worth=random.uniform(0, 1e9), environment=self.environment, ship_command=self.ship)
+        lieutenant: Lieutenant = Lieutenant(name=NameGenerator().generate_name(), age=random.randint(0,110), net_worth=random.uniform(0, 1e9), environment=self.environment, ship_command=self.ship, actor_manager=self)
         self.actors[lieutenant.id] = lieutenant
 
     def get_actor_by_id(self, id: UUID):
