@@ -5,7 +5,9 @@ import traceback
 import csv
 import uuid
 from abc import ABC, abstractmethod
-from typing import Callable, Optional
+from typing import Callable, Optional, List
+
+from pydantic import BaseModel, Field
 
 from .Inventory import Inventory
 from .NameGenerator import NameGenerator
@@ -77,7 +79,7 @@ class Humanoid(ABC):
             reader = csv.reader(f)
             family_names = [row[0].strip() for row in reader]
             next(reader, None)
-        family_name = random.choice(family_names)
+        family_name = random.choice(family_names).lower().capitalize()
 
 
         context = f"""
@@ -105,40 +107,60 @@ class Humanoid(ABC):
 
 
 
+    class FearsAndWantsSchema(BaseModel):
+    wants: List[str] = Field(..., description="A list of the character's core desires.")
+    fears: List[str] = Field(..., description="A list of the character's core fears.")
+
+
     def define_fears_and_wants(self, actions: Optional[list] = None):
+        """
+        Uses the Gemini API to generate a character's core wants and fears
+        based on their profile, expecting a structured JSON response.
+        """
         actions = actions or []
-        trait_list = ", ".join(self.personality)
 
-        prompt = (
-            f"You are a character on the FS Madame de Pompadour.\n"
-            f"Name: {self.name}\n"
-            f"Personality traits: {self.personality}\n"
-            f"Backstory: {self.backstory}\n"
-            f"Recent actions: {actions}\n\n"
-            f"{trait_list}: For each trait, output exactly ONE line using this format:\n"
-            "Trait: <trait> | Want: <short phrase> | Fear: <short phrase>\n\n"
-            "If you don't have a want or fear for a trait, leave that field empty.\n"
-            "Do NOT add extra commentary."
-        )
+        prompt = f"""
+        You are a character psychologist. Based on the following character profile,
+        determine their core wants and fears.
+    
+        ## Character Profile
+        - Name: {self.name}
+        - Personality: {self.personality}
+        - Backstory: {self.backstory}
+        - Recent Actions: {actions[-3:]}
+    
+        ## Your Task
+        Generate a JSON object containing two keys: "wants" and "fears".
+        - For each key, provide a list of 2 to 3 short, descriptive phrases.
+        - The wants and fears should be a direct consequence of the character's personality and backstory.
+    
+        CRUCIAL: Your response must ONLY be the raw JSON object. Do not include any other text, explanations, or markdown formatting.
+        """
 
-        raw = (self.actor_manager.submit_prompt(prompt) or "").strip()
+        try:
+            response = self.client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config={
+                    "response_mime_type": "application/json",
+                    "response_schema": FearsAndWantsSchema,
+                }
+            )
+            print(f"Fears/Wants decision from AI: {response.text}")
+            schema = FearsAndWantsSchema.model_validate_json(response.text)
 
-        lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
-        pattern = re.compile(r"Trait:\s*(?P<trait>[^|]+)\|\s*Want:\s*(?P<want>[^|]*)\|\s*Fear:\s*(?P<fear>.*)")
+            # Use the validated data
+            self.wants.extend(schema.wants)
+            self.fears.extend(schema.fears)
 
-        for ln in lines:
-            m = pattern.match(ln)
-            if not m:
-                continue
-            want = m.group("want").strip()
-            fear = m.group("fear").strip()
+        except Exception as e:
+            print(f"Error parsing fears and wants for {self.name}: {e}")
+            # Fallback in case of error
+            self.wants.append("Survive the day")
+            self.fears.append("The unknown")
 
-            if want:
-                self.add_new_wish(want)
-            if fear:
-                self.add_new_fear(fear)
-
-        # minimal dedupe & limit
+        # --- The rest of your function remains the same ---
+        # Minimal dedupe & limit
         self.wants = list(dict.fromkeys(self.wants))[:6]
         self.fears = list(dict.fromkeys(self.fears))[:6]
 
@@ -149,6 +171,7 @@ class Humanoid(ABC):
             self.tasks
         ]
         self.global_prompt = self._compose_global_prompt()
+
 
     def lose_hp(self, amount: float):
         self.health -= amount

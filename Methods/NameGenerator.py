@@ -11,12 +11,12 @@ class NameGenerator():
             reader = csv.reader(f)
             family_names = [row[0].strip() for row in reader]
             next(reader, None)
-        return random.choice(family_names)
+        return random.choice(family_names).lower().capitalize()
 
 
     def generate_planet(self) -> str:
         with open("Methods/Datasets/planets.csv", "r", encoding="utf-8") as f:
-            reader = csv.reader(f)
+            reader = csv.reader(f, delimiter=';')
 
             next(reader, None)
 
