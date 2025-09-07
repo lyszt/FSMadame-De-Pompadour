@@ -6,7 +6,7 @@ import csv
 import uuid
 from abc import ABC, abstractmethod
 from typing import Callable, Optional, List
-
+from google import genai
 from pydantic import BaseModel, Field
 
 from .Inventory import Inventory
@@ -76,7 +76,10 @@ class Humanoid(ABC):
         role_name = self.__class__.__name__
         wealth = random.choice(["starving", "poor","rich", "economical elite", "nobility"])
 
-        planet_of_origin = NameGenerator().generate_planet()
+        full_planet_description = NameGenerator().generate_planet()
+        planet_parts = full_planet_description.split(',')
+        planet_of_origin = planet_parts[0] if planet_parts else "an unknown world"
+
 
         with open("Methods/Datasets/patronymes.csv", "r", encoding="utf-8") as f:
             reader = csv.reader(f)
@@ -84,20 +87,24 @@ class Humanoid(ABC):
             next(reader, None)
         family_name = random.choice(family_names).lower().capitalize()
 
-
         context = f"""
-        You are a {role_name} aboard the French military starship FS Madame de Pompadour.
-        You are from {planet_of_origin}.
-        Your family is {family_name}
-        Your family's wealth can be described as {wealth}.
-        You are part of a crew set out to space the unknown regions of space in a science fiction story.
-        Your name is {self.name}, and you are known for being: {self.personality}.
-        Write a **first-person backstory in 2-3 sentences**. 
-        Introduce yourself, your backstory and why you joined the crew.
-        Do NOT include instructions, code, bullet points, quotes, or placeholders.
-        Do NOT put parentheses or brackets in your text.
-        Write as if you are the character telling your story.
-        Just write the backstory, don't comment or acknowledge.
+        You are a creative writer developing a character for a sci-fi simulation.
+        Your task is to write a compelling, first-person backstory (2-3 sentences) by weaving the following key elements into a creative narrative.
+        Do NOT just list the elements back. Invent something from this.
+    
+        ## Key Elements ##
+        - Name: {self.name}
+        - Role: A {role_name}
+        - Origin: From {planet_of_origin}
+        - Family: The {family_name} family, who are {wealth}
+        - Personality: {self.personality}
+    
+        ## Instructions ##
+        - The backstory must be in the first-person ("I...").
+        - It must explain why a person with this background and personality joined the crew of the starship FS Madame de Pompadour.
+        - Do NOT include any text other than the backstory itself.
+    
+        Write the backstory now.
         """
         raw = self.actor_manager.submit_prompt(context).strip()
         self.backstory = raw.strip()
@@ -126,9 +133,9 @@ class Humanoid(ABC):
     
         CRUCIAL: Your response must ONLY be the raw JSON object. Do not include any other text, explanations, or markdown formatting.
         """
-
+        client = genai.Client()
         try:
-            response = self.client.models.generate_content(
+            response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=prompt,
                 config={

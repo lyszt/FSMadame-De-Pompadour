@@ -114,4 +114,4 @@ def get_personality_traits():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
