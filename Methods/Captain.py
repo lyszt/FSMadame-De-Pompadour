@@ -68,17 +68,6 @@ class Captain(Humanoid):
         return "The cargo bay doors open, and all contents are jettisoned into space."
 
     @command
-    def request_status_report(self) -> str:
-        """Asks the ship's computer for a full status report on all major systems."""
-        report = self.ship.status_report()
-        system_strings = [
-            f"{name.replace('_', ' ').title()} at {data['health']:.0f}% ({data['status']})"
-            for name, data in report["systems"].items()
-        ]
-        status_lines = f"Overall Integrity: {report['integrity']:.0f}%\n- " + "\n- ".join(system_strings)
-        return f"The main screen displays the ship's status:\n{status_lines}"
-
-    @command
     def order_repairs(self, arg: str) -> str:
         """Orders the engineering team to repair a damaged ship system. The captain gives the order; the crew must carry it out."""
         system_name = arg.lower() if arg else ""
@@ -236,6 +225,12 @@ class Captain(Humanoid):
         """
         my_recent_actions = actions[0]
         other_recent_actions = actions[1]
+        report = self.ship.status_report()
+        system_strings = [
+            f"{name.replace('_', ' ').title()} at {data['health']:.0f}% ({data['status']})"
+            for name, data in report["systems"].items()
+        ]
+        status_lines = f"Overall Integrity: {report['integrity']:.0f}%\n- " + "\n- ".join(system_strings)
 
         my_actions_str = "\n".join(f"- {action}" for action in my_recent_actions) if my_recent_actions else "None"
         other_actions_str = "\n".join(f"- {action}" for action in other_recent_actions) if other_recent_actions else "None"
@@ -249,6 +244,8 @@ class Captain(Humanoid):
         ## Your Role and Context
         You are the Captain, the commanding officer of the entire vessel. Your goal is to resolve situations, not just report on them.
         To your benefit or not, your personality traits are: {self.personality}. Act upon those traits.
+        System status: {status_lines} 
+        If everything is at 100%, the ship is fine.
 
         ## Current Situation
         - **Officers/Crew nearby:** {entities_nearby}

@@ -177,8 +177,37 @@ class Environment:
     def _generate_storyteller_pitch(self, environment_state: Dict[str, Any]) -> str:
         """The 'Storyteller' AI generates the initial idea for an event."""
         print("[Storyteller] Generating initial pitch...")
+
+        # Report main ship
+        main_report = self.main_ship.status_report()
+        main_system_strings = [
+            f"{name.replace('_', ' ').title()} at {data['health']:.0f}% ({data['status']})"
+            for name, data in main_report["systems"].items()
+        ]
+        main_status_lines = (
+                f"{self.main_ship.name} - Overall Integrity: {main_report['integrity']:.0f}%\n"
+                + "\n".join(f"- {s}" for s in main_system_strings)
+        )
+
+        # Report all other ships in sector
+        sector_reports = []
+        for ship in self.ships_sector:
+            report = ship.status_report()
+            sys_strings = [
+                f"{name.replace('_', ' ').title()} at {data['health']:.0f}% ({data['status']})"
+                for name, data in report["systems"].items()
+            ]
+            status_lines = (
+                    f"{ship.name} - Overall Integrity: {report['integrity']:.0f}%\n"
+                    + "\n".join(f"- {s}" for s in sys_strings)
+            )
+            sector_reports.append(status_lines)
+
+        # Put together
+        sector_summary = "\n\n".join([main_status_lines] + sector_reports)
+
         state_summary = (
-            f"Ship Status: {environment_state['ship_status']}\n"
+            f"Ship Status: {sector_summary}\n"
             f"Characters: {environment_state['character_profiles']}\n"
             f"Mood: {environment_state['current_mood']}\n"
             f"Recent Events: {environment_state['action_history'][-5:]}"
