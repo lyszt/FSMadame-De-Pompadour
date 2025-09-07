@@ -18,6 +18,9 @@ def command(func: Callable) -> Callable:
     func.is_command = True
     return func
 
+class FearsAndWantsSchema(BaseModel):
+    wants: List[str] = Field(..., description="A list of the character's core desires.")
+    fears: List[str] = Field(..., description="A list of the character's core fears.")
 
 class Humanoid(ABC):
     def __init__(self, name: str, age: int, net_worth: float, actor_manager: 'ActorManager', mini_llm):
@@ -103,14 +106,6 @@ class Humanoid(ABC):
             self.backstory = sentences[0].strip()
         else:
             self.backstory = raw.strip()
-
-
-
-
-    class FearsAndWantsSchema(BaseModel):
-    wants: List[str] = Field(..., description="A list of the character's core desires.")
-    fears: List[str] = Field(..., description="A list of the character's core fears.")
-
 
     def define_fears_and_wants(self, actions: Optional[list] = None):
         """
