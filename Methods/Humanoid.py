@@ -92,20 +92,15 @@ class Humanoid(ABC):
         Your family's wealth can be described as {wealth}.
         You are part of a crew set out to space the unknown regions of space in a science fiction story.
         Your name is {self.name}, and you are known for being: {self.personality}.
-        Write a **first-person backstory in 1-2 sentences**. 
-        Include your origin, key experiences, and why you joined the crew.
+        Write a **first-person backstory in 2-3 sentences**. 
+        Introduce yourself, your backstory and why you joined the crew.
         Do NOT include instructions, code, bullet points, quotes, or placeholders.
         Do NOT put parentheses or brackets in your text.
         Write as if you are the character telling your story.
         Just write the backstory, don't comment or acknowledge.
         """
         raw = self.actor_manager.submit_prompt(context).strip()
-        sentences = re.findall(r'[^.!?]*[.!?]', raw, re.DOTALL)
-
-        if sentences:
-            self.backstory = sentences[0].strip()
-        else:
-            self.backstory = raw.strip()
+        self.backstory = raw.strip()
 
     def define_fears_and_wants(self, actions: Optional[list] = None):
         """
