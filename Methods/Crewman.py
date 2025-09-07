@@ -20,8 +20,8 @@ def command(func: Callable) -> Callable:
     return func
 
 class Crewman(Humanoid):
-    def __init__(self, name: str, net_worth: float, age: int, ship: Ship, environment: Environment, actor_manager):
-        super().__init__(f"Crewman {name}", age, net_worth, actor_manager)
+    def __init__(self, name: str, net_worth: float, age: int, ship: Ship, environment: Environment, actor_manager, mini_llm):
+        super().__init__(f"Crewman {name}", age, net_worth, actor_manager, mini_llm)
         self.ship = ship
         self.environment = environment
         self.client = genai.Client()

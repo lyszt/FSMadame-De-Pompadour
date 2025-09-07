@@ -2,13 +2,14 @@ import os
 import random
 import re
 import traceback
+import csv
 import uuid
 from abc import ABC, abstractmethod
-from pathlib import Path
 from typing import Callable, Optional
-from gpt4all import gpt4all, GPT4All
 
 from .Inventory import Inventory
+from .NameGenerator import NameGenerator
+
 
 def command(func: Callable) -> Callable:
     """Decorator to register a method as an AI-callable command."""
@@ -17,7 +18,7 @@ def command(func: Callable) -> Callable:
 
 
 class Humanoid(ABC):
-    def __init__(self, name: str, age: int, net_worth: float, actor_manager: 'ActorManager'):
+    def __init__(self, name: str, age: int, net_worth: float, actor_manager: 'ActorManager', mini_llm):
         self.id = uuid.uuid4()
         self.name: str = name
         self.age: int = age
@@ -27,18 +28,8 @@ class Humanoid(ABC):
         self.inventory: Inventory = Inventory()
         self.tasks = []
         self.actor_manager = actor_manager
-        # micro llm
-        # API doesn't work, btw
-        try:
-            home_directory = Path.home()
-            model_folder = home_directory / 'llm_models'
-            self.model = GPT4All(
-                model_name='mistral-7b-instruct-v0.1.Q3_K_M.gguf',
-                model_path=str(model_folder)
-            )
-        except Exception:
-            traceback.print_exc()
-            print("Download mistral-7b-instruct-v0.1.Q3_K_M.gguf to your 'home/llm_models' folder in your home directory for this to run.")
+        # mini_llm is just a reference, not a GPT4All instance
+        self.model = mini_llm
 
         self.wants = []
         self.fears = []
@@ -53,8 +44,9 @@ class Humanoid(ABC):
         if "Forgettable" in self.personality or "addict" in self.personality:
             self.memory_depth -= 5
 
-        print(f"Using small model to generate {self.name}'s personality")
+        print(f"Using small model to generate {self.name}'s personality", flush=True)
         self.set_backstory()
+        print(self.backstory, flush=True)
         self.define_fears_and_wants()
         self.captain_task = f"Your superiors have given you a task: {self.tasks}" if len(self.tasks) > 0 else ""
         self.global_information = [
@@ -75,24 +67,45 @@ class Humanoid(ABC):
     def act(self, actors_around: list, action_history: list):
         pass
 
-
     def set_backstory(self):
+        role_name = self.__class__.__name__
+        wealth = random.choice(["starving", "poor","rich", "economical elite", "nobility"])
+
+        planet_of_origin = NameGenerator().generate_planet()
+
+        with open("Methods/Datasets/patronymes.csv", "r", encoding="utf-8") as f:
+            reader = csv.reader(f)
+            family_names = [row[0].strip() for row in reader]
+            next(reader, None)
+        family_name = random.choice(family_names)
+
+
         context = f"""
-             You are a character in a text-based simulation aboard the French military starship, FS Madame de Pompadour.
-             You are surrounded by many in your crew. They are: {self.actor_manager.actors}
-             Your name is {self.name}, and you are known for being: {self.personality}
-             Make a small, brief backstory telling how you got here and why you joined the crew.
+        You are a {role_name} aboard the French military starship FS Madame de Pompadour.
+        You are from {planet_of_origin}.
+        Your family is {family_name}
+        Your family's wealth can be described as {wealth}.
+        You are part of a crew set out to space the unknown regions of space in a science fiction story.
+        Your name is {self.name}, and you are known for being: {self.personality}.
+        Write a **first-person backstory in 1-2 sentences**. 
+        Include your origin, key experiences, and why you joined the crew.
+        Do NOT include instructions, code, bullet points, quotes, or placeholders.
+        Do NOT put parentheses or brackets in your text.
+        Write as if you are the character telling your story.
+        Just write the backstory, don't comment or acknowledge.
         """
-        with self.model.chat_session():
-            self.backstory = self.model.generate(context) or ""
+        raw = self.actor_manager.submit_prompt(context).strip()
+        sentences = re.findall(r'[^.!?]*[.!?]', raw, re.DOTALL)
+
+        if sentences:
+            self.backstory = sentences[0].strip()
+        else:
+            self.backstory = raw.strip()
+
+
+
 
     def define_fears_and_wants(self, actions: Optional[list] = None):
-        """
-        Single-generation approach: one call that returns labeled lines:
-        Trait: <trait> | Want: <short phrase> | Fear: <short phrase>
-
-        Only non-empty Want/Fear phrases are added to the lists.
-        """
         actions = actions or []
         trait_list = ", ".join(self.personality)
 
@@ -108,8 +121,7 @@ class Humanoid(ABC):
             "Do NOT add extra commentary."
         )
 
-        with self.model.chat_session():
-            raw = (self.model.generate(prompt) or "").strip()
+        raw = (self.actor_manager.submit_prompt(prompt) or "").strip()
 
         lines = [ln.strip() for ln in raw.splitlines() if ln.strip()]
         pattern = re.compile(r"Trait:\s*(?P<trait>[^|]+)\|\s*Want:\s*(?P<want>[^|]*)\|\s*Fear:\s*(?P<fear>.*)")
@@ -130,7 +142,6 @@ class Humanoid(ABC):
         self.wants = list(dict.fromkeys(self.wants))[:6]
         self.fears = list(dict.fromkeys(self.fears))[:6]
 
-        
         self.global_information = [
             self.wants,
             self.fears,
@@ -138,8 +149,6 @@ class Humanoid(ABC):
             self.tasks
         ]
         self.global_prompt = self._compose_global_prompt()
-
-
 
     def lose_hp(self, amount: float):
         self.health -= amount
@@ -149,13 +158,7 @@ class Humanoid(ABC):
     def add_task(self, task: str):
         self.tasks.append(task)
         self.captain_task = f"Your superiors have given you tasks: {self.tasks}" if len(self.tasks) > 0 else ""
-        
-        self.global_information = [
-            self.wants,
-            self.fears,
-            self.backstory,
-            self.tasks
-        ]
+        self.global_information = [self.wants, self.fears, self.backstory, self.tasks]
         self.global_prompt = self._compose_global_prompt()
 
     @command
@@ -163,13 +166,7 @@ class Humanoid(ABC):
         if task in self.tasks:
             self.tasks.remove(task)
             self.captain_task = f"You have decided to ignore: {task}"
-            
-            self.global_information = [
-                self.wants,
-                self.fears,
-                self.backstory,
-                self.tasks
-            ]
+            self.global_information = [self.wants, self.fears, self.backstory, self.tasks]
             self.global_prompt = self._compose_global_prompt()
 
     @command
@@ -181,7 +178,6 @@ class Humanoid(ABC):
 
     @command
     def add_new_wish(self, want):
-        # fixed: append to wants not fears
         if want and isinstance(want, str):
             s = want.strip()
             if s and s not in self.wants:
@@ -194,43 +190,35 @@ class Humanoid(ABC):
 
     @command
     def remove_want(self, want):
-        # fixed: remove from wants (no recursion)
         if want in self.wants:
             self.wants.remove(want)
 
     @command
     def punch(self, target_name: str) -> str:
-        """Starts a physical altercation with another character by name."""
         if not target_name:
             return f"{self.name} swings at the air, looking foolish."
-
         target = next((actor for actor in self.actor_manager.actors.values() if target_name.lower() in actor.name.lower()), None)
-
         if not target:
             return f"{self.name} looks around for '{target_name}' but can't find them."
         if not target.alive:
             return f"{self.name} looks at {target.name}'s body but does nothing."
-
         target.lose_hp(random.uniform(1, 10))
+        if not target.alive:
+            return f"{self.name} finishes {target_name} with a deadly punch, which sends him ragdolling, now unalive."
         places_to_punch = ["jaw", "nose", "stomach", "ribs", "shoulder"]
         return f"{self.name} punches {target.name} right in the {random.choice(places_to_punch)}."
 
     @command
     def shoot(self, target_name: str) -> str:
-        """Uses a personal weapon against another character by name."""
         if not target_name:
             return f"{self.name} nervously draws a weapon but has no one to aim at."
-
         target = next((actor for actor in self.actor_manager.actors.values() if target_name.lower() in actor.name.lower()), None)
-
         if not target:
             return f"{self.name} aims their weapon, but can't find '{target_name}'."
         if not target.alive:
             return f"{self.name} aims their weapon at {target.name}'s body but doesn't fire."
-
         damage = random.uniform(15, 50)
         target.lose_hp(damage)
-
         if not target.alive:
             return f"{self.name} pulls out a concealed weapon and kills {target.name} in a shocking act of violence."
         else:
@@ -238,7 +226,6 @@ class Humanoid(ABC):
 
     @command
     def acquire_item(self, arg: str) -> str:
-        """Acquires a new item for personal inventory."""
         item = arg
         if not item:
             return f"{self.name} considers acquiring something, but decides against it."
@@ -247,7 +234,6 @@ class Humanoid(ABC):
 
     @command
     def get_inventory(self, arg: Optional[str] = None) -> str:
-        """Checks their own inventory."""
         items = self.inventory.inventory
         if not items:
             return f"{self.name} checks their pockets and finds them empty."
@@ -255,7 +241,6 @@ class Humanoid(ABC):
 
     @command
     def use_item(self, arg: str) -> str:
-        """Uses an item from inventory in a contextual, narrative way."""
         item = arg
         if not item:
             return f"{self.name} considers using a tool but doesn't pick one."
@@ -265,7 +250,6 @@ class Humanoid(ABC):
 
     @command
     def task_is_completed(self, arg: str) -> str:
-        """Reports that one of their assigned tasks is now completed. The argument must be the exact task string."""
         task = arg
         if not self.tasks:
             return f"{self.name} has no orders to execute."

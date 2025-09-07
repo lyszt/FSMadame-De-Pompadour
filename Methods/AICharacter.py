@@ -47,6 +47,7 @@ class AICharacter(Humanoid):
             ship: Ship,
             environment: 'Environment',
             actor_manager,
+            mini_llm,
             net_worth: float = 100.0
     ):
         self.ship = ship
@@ -55,7 +56,7 @@ class AICharacter(Humanoid):
 
         # Instantiate self concept from prompt
         self._generate_and_apply_sheet(concept)
-        super().__init__(self.name, self.age, net_worth, actor_manager)
+        super().__init__(self.name, self.age, net_worth, actor_manager, mini_llm)
 
         self.commands = {}
         self.command_descriptions = {}

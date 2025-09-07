@@ -149,10 +149,12 @@ class Environment:
             new_character = AICharacter(
                 concept=concept,
                 ship=self.main_ship,
-                environment=self
+                environment=self,
+                actor_manager=self.actor_manager,
+                mini_llm=self.actor_manager.model
             )
 
-            if new_character.name == "T-800" and new_character.profession == "Infiltrator":
+            if new_character.profession == "Infiltrator":
                 return "Ship records indicate a new crew transfer is pending, but the data is corrupted."
 
             self.main_ship.crew.append(new_character)

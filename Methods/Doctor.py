@@ -30,11 +30,11 @@ class Doctor(Humanoid):
     Represents the ship's medical officer, responsible for the health and well-being of the crew.
     The Doctor uses an AI layer to interpret high-level intentions into specific medical actions.
     """
-    def __init__(self, name: str, net_worth: float, age: int, environment: 'Environment', actor_manager):
+    def __init__(self, name: str, net_worth: float, age: int, environment: 'Environment', actor_manager, mini_llm):
         """
         Initializes the Doctor instance.
         """
-        super().__init__(f"Doctor {name}", age, net_worth, actor_manager)
+        super().__init__(f"Doctor {name}", age, net_worth, actor_manager, mini_llm)
         self.environment = environment
 
         # --- AI System Initialization ---
