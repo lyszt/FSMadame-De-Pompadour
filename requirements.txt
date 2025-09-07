@@ -9,3 +9,4 @@ audioop-lts
 numpy
 openai
 gtts
+gpt4all
