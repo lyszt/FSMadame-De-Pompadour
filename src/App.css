@@ -1,4 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
+
+body {
+  background-color: #0a101f;
+  color: #c8d8f0;
+  font-family: 'Roboto Mono', monospace;
+}
 
 .eventBox {
   z-index: 0;
@@ -14,28 +21,31 @@
 }
 
 @keyframes show_dialogue_box {
-  0% {
+  from {
     opacity: 0;
-    width: 85%;
+    transform: translateX(-15px);
   }
-
-  100% {
-    width: 90%;
+  to {
     opacity: 1;
+    transform: translateX(0px);
   }
 }
+
 .dialogue_box {
-  padding: 2%;
-  margin-top: 2%;
-  background-color: #1e1e1e;
+  padding: 1rem 1.5rem;
+  margin-top: 1rem;
+  background-color: rgba(14, 47, 74, 0.3);
   width: 90%;
   height: fit-content;
   display: flex;
   align-items: center;
   justify-content: start;
-  animation: show_dialogue_box 2s both ease-in-out;
+  animation: show_dialogue_box 0.5s 1 ease-out;
+  border-left: 4px solid #38bdf8;
+  border-radius: 2px;
+  box-shadow: inset 0 0 10px rgba(56, 189, 248, 0.1);
 }
-/*-- This helps with keeping everything within the box on the last child */
+
 .dialogue_box::before{
   content: "";
   position: absolute;
@@ -45,24 +55,37 @@
   width: 100%;
   height: 100%;
 }
+
 .eventBox:last-child {
   margin: 10%;
 }
+
 .eventBox p:first-of-type {
   background-color: #2d4768;
+  border: 2px solid #a3a5a8;
 }
+
 .eventBox:first-child {
-  background-color: #31aa86;
+  background-color: #002a37;
 }
 
 .passTurn {
   transition: .3s;
-  background: linear-gradient(90deg, #48c67a, #1dd6aa);
+  background: #0e4f6a;
+  color: #c8d8f0;
+  border: 1px solid #38bdf8;
+}
+
+.passTurn:hover {
+  background: #38bdf8;
+  color: #0a101f;
+  box-shadow: 0 0 15px #38bdf8;
 }
 
 .passTurn:active{
-  background: linear-gradient(90deg, #607da5, #1a686c);
+  background: #0e4f6a;
 }
+
 .passTurn img {
   transition: .4s;
   filter: invert(1);
@@ -70,16 +93,21 @@
 
 .characterList {
   overflow: scroll;
-  color: #2a2a2a;
-  padding: 2%
+  background-color: rgba(10, 25, 47, 0.5);
+  color: #c8d8f0;
+  padding: 2%;
+  border: 1px solid #0e2f4a;
+  border-radius: 4px;
 }
 .characterList button {
   width: 100%;
   padding-left: 2%;
+  transition: background-color 0.2s;
 }
 .characterList button:hover {
-  background-color: #3bc192;
+  background-color: #0e4f6a;
+  color: #ffffff;
 }
 .characterList button:active {
-  background-color: #cfcfcf;
+  background-color: #0a101f;
 }

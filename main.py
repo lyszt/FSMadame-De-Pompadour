@@ -37,7 +37,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/action": {"origins": "http://localhost:5173"},
                      "/text_to_speech": {"origins": "http://localhost:5173"},
                      "/get_actors": {"origins": "http://localhost:5173"},
-                     "/get_personality": {"origins": "http://localhost:5173"}})
+                     "/get_character_details": {"origins": "http://localhost:5173"}})
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 client = OpenAI()
@@ -99,8 +99,12 @@ def get_list_of_crewmembers():
         traceback.print_exc()
         return jsonify(error=str(e)), 500
 
-@app.route('/get_personality', methods=['POST'])
-def get_personality_traits():
+
+@app.route('/get_character_details', methods=['POST'])
+def get_character_details():
+    """
+    Fetches all key narrative attributes for a given character ID.
+    """
     data = request.get_json()
     if not data:
         return jsonify(error="Invalid request"), 400
@@ -109,9 +113,22 @@ def get_personality_traits():
     if not id_number:
         return jsonify(error="Missing id_number"), 400
 
-    personality = actor_manager.get_actor_by_id(UUID(id_number)).personality
-    return jsonify(personality)
+    try:
+        character = actor_manager.get_actor_by_id(UUID(id_number))
 
+        details = {
+            "personality": character.personality,
+            "backstory": getattr(character, 'backstory', 'No backstory available.'),
+            "wants": getattr(character, 'wants', []),
+            "fears": getattr(character, 'fears', [])
+        }
+        return jsonify(details)
+
+    except (KeyError, AttributeError) as e:
+        return jsonify(error=f"Character not found or attribute missing: {e}"), 404
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify(error=str(e)), 500
 
 if __name__ == '__main__':
     app.run()
