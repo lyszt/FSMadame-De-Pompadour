@@ -138,12 +138,12 @@ class Captain(Humanoid):
 
 
     @command
-    def add_focus(self, order: str) -> str:
+    def add_focus(self, arg: Optional[str]) -> str:
         """Adds a current focus."""
-        if not order:
+        if not arg:
             return f"{self.name} needs to do something, but doesn't know what."
-        self.tasks.append(order)
-        return f"{self.name}  has decided to '{order}'."
+        self.tasks.append(arg)
+        return f"{self.name}  has decided to '{arg}'."
 
     @command
     def check_cargo_manifest(self) -> str:

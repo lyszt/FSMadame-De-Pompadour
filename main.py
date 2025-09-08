@@ -50,7 +50,7 @@ action_history: deque = deque(maxlen=100)
 
 
 def perform_random_act():
-    act_of_random: str = actor_manager.act_randomnly(action_history=list(action_history))
+    act_of_random: str = actor_manager.act_randomly(action_history=list(action_history))
     action_history.append(act_of_random)
     return jsonify(body=act_of_random, status=200)
 

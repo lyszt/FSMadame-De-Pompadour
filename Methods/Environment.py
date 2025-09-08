@@ -73,8 +73,8 @@ class Environment:
         return f"A minor environmental event occurs: {event_description}."
 
     @command
-    def set_anomaly(self, anomaly):
-        self.anomalies = anomaly
+    def set_anomaly(self, arg: str):
+        self.anomalies = arg
 
     @command
     def set_mood(self, arg: str) -> str:
