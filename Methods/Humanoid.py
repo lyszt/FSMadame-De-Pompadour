@@ -97,7 +97,7 @@ class Humanoid(ABC):
         - Role: A {role_name}
         - Origin: From {planet_of_origin}
         - Family: The {family_name} family, who are {wealth}
-        - Personality: {self.personality}   
+        - Personality: {self.personality}  - Strictly make the story follow this character's personality. This is a priority.
     
         ## Instructions ##
         - The backstory must be in the first-person ("I...").

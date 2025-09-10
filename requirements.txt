@@ -10,3 +10,4 @@ numpy
 openai
 gtts
 gpt4all
+matplot

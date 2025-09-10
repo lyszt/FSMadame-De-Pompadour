@@ -6,7 +6,7 @@ from google import genai
 from pydantic import BaseModel, Field
 
 from .Humanoid import Humanoid
-from .Ship import Ship
+from Methods.System.Ship.Ship import Ship
 from .Environment import Environment
 
 class Command(BaseModel):

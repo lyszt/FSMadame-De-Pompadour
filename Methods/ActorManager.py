@@ -4,11 +4,8 @@ from multiprocessing import Queue, Process
 from pathlib import Path
 from flask import jsonify
 import random
-import traceback
 
-from gpt4all import GPT4All
-
-from .Ship import Ship
+from Methods.System.Ship.Ship import Ship
 from .Captain import Captain
 from .Environment import Environment
 from .Crewman import Crewman
@@ -16,7 +13,6 @@ from .Doctor import Doctor
 from .Lieutenant import Lieutenant
 from .NameGenerator import NameGenerator
 from .Humanoid import Humanoid
-
 import traceback
 from gpt4all import GPT4All
 
@@ -75,7 +71,6 @@ class ActorManager:
     def __init__(self):
         self.actors = {}
         self.ship = Ship(crew=list(self.actors.values()), name="La Madame de Pompadour", accuracy=0.5)
-
         # queues for async requests
         self.request_q = Queue()
         self.response_q = Queue()
@@ -97,6 +92,12 @@ class ActorManager:
             print("Download the preferred model into ~/llm_models before running.")
 
         self.environment = Environment(main_ship=self.ship, ships_sector=None, actor_manager=self)
+        self.captain = None
+
+    def add(self, actor: Humanoid):
+        self.actors[actor.id] = actor
+
+    def populate(self, population: int):
         self.captain = Captain(
             name=NameGenerator().generate_name(),
             age=random.randint(0, 110),
@@ -107,10 +108,6 @@ class ActorManager:
             mini_llm=self.request_q
         )
 
-    def add(self, actor: Humanoid):
-        self.actors[actor.id] = actor
-
-    def populate(self, population: int):
         for _ in range(population):
             npc = Crewman(
                 name=NameGenerator().generate_name(),

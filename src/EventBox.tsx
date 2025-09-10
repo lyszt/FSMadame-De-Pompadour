@@ -5,6 +5,7 @@ import Draggable from 'react-draggable';
 import './App.css'
 
 function EventBox() {
+    const [mapImageUrl, setMapImageUrl] = useState("");
     const nodeRef = useRef(null);
     const [dialogues, setDialogues] = useState<string[]>([
         'Booting simulation... Welcome to the FS Madame de Pompadour.',
@@ -34,11 +35,26 @@ function EventBox() {
             } catch (error) {
                 const message = (error instanceof Error) ? error.message : "Unknown error";
                 console.error(message);
-                setDialogues(prev => [...prev, `[SYSTEM ERROR] Failed to load character manifest: ${message}`]);
             }
         }
         loadCharacterList();
     }, []);
+
+    useEffect(() => {
+        async function loadMapImage() {
+            const url = `http://127.0.0.1:5000/get_generated_map?ts=${Date.now()}`;
+            try {
+                const response = await fetch(url, { method: 'GET', cache: "no-store" });
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+                setMapImageUrl(imageUrl);
+            } catch (error) {
+                console.error("Failed to load map image:", error);
+            }
+        }
+        loadMapImage();
+    }, []);
+
 
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -138,10 +154,10 @@ function EventBox() {
                         </Draggable>
                     )}
 
-                    {/* Right Panel: Map */}
-                    <div className="w-full h-full flex flex-col bg-gray-900 border border-gray-700">
-
-                    </div>
+                        {/* Right Panel: Map */}
+                        <div className="w-full h-full overflow-hidden relativebg-gray-900 border border-gray-700">
+                            <img src={mapImageUrl} alt={"Game map"}/>
+                        </div>
                 </div>
 
             </div>

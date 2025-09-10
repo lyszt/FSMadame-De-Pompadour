@@ -4,8 +4,7 @@ from typing import List, Optional, Callable, Dict, Any
 from google import genai
 from pydantic import BaseModel, Field
 
-from .Ship import Ship
-from .Humanoid import Humanoid
+from Methods.System.Ship.Ship import Ship
 from .Critic import Critic
 from .AICharacter import AICharacter
 

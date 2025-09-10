@@ -1,14 +1,12 @@
 import random
 import inspect
-import json
-from typing import Optional, Callable, List
+from typing import Optional, Callable
 
 from google import genai
 from pydantic import BaseModel, Field
 
 from .Humanoid import Humanoid
-from .Inventory import Inventory
-from .Ship import Ship
+from Methods.System.Ship.Ship import Ship
 
 
 class Command(BaseModel):

@@ -1,12 +1,8 @@
 import asyncio
-import io
-import json
 import os
-import random
 import sys
 from uuid import UUID, uuid4
-
-from Methods.MapStructures import MapStructure
+from multiprocessing import Process
 
 # Death to windows
 
@@ -16,33 +12,23 @@ if sys.platform == 'win32':
     from pydub.utils import which
 
     AudioSegment.converter = which("ffmpeg") or "C:/ffmpeg/bin/ffmpeg.exe"
-import io
-import sys
 import traceback
-import typing
-import tempfile
 from collections import deque
-from gtts import gTTS
 import dotenv
-from Methods.Crewman import Crewman
 # Essentials
-from flask import Flask, render_template, jsonify, send_file, request
+from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS
 from googletrans import Translator
 from openai import OpenAI
 # Custom Methods
-from Methods.NameGenerator import NameGenerator
 from Methods.ActorManager import ActorManager
 
 # Globals
-DEBUG_MODE: bool = True
+DEBUG_MODE: bool = False
 
 app = Flask(__name__)
-
-CORS(app, resources={r"/action": {"origins": "http://localhost:5173"},
-                     "/text_to_speech": {"origins": "http://localhost:5173"},
-                     "/get_actors": {"origins": "http://localhost:5173"},
-                     "/get_character_details": {"origins": "http://localhost:5173"}})
+CORS(app,
+     origins="http://localhost:5173")
 dotenv.load_dotenv(dotenv.find_dotenv())
 
 client = OpenAI()
@@ -51,11 +37,12 @@ client = OpenAI()
 # Our manager with NPCS
 
 # GAME STRUCTURES AND MANAGERS
+
 if not DEBUG_MODE:
-    actor_manager: ActorManager = ActorManager()
-    actor_manager.populate(5)
-    action_history: deque = deque(maxlen=100)
-game_map: MapStructure = MapStructure(4)
+    actor_manager = ActorManager()
+    action_history = deque(maxlen=100)
+
+
 
 def perform_random_act():
     act_of_random: str = actor_manager.act_randomly(action_history=list(action_history))
@@ -115,6 +102,25 @@ def get_list_of_crewmembers():
         return jsonify(error=str(e)), 500
 
 
+@app.route('/get_generated_map')
+def send_map_data():
+    try:
+        image_buffer = actor_manager.ship.send_map_image()
+        if image_buffer is None:
+            return jsonify(error="Image buffer could not be generated."), 500
+
+        return send_file(
+            image_buffer,
+            mimetype='image/png',
+            as_attachment=False
+        )
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify(error=f"An internal error occurred: {e}"), 500
+
+
+
+
 @app.route('/get_character_details', methods=['POST'])
 def get_character_details():
     if DEBUG_MODE:
@@ -153,6 +159,19 @@ def get_character_details():
         traceback.print_exc()
         return jsonify(error=str(e)), 500
 
+
+@app.route("/")
+def populate_actors():
+    populate_process: Process = Process(target=populate_actor_manager)
+    populate_process.start()
+
+def populate_actor_manager():
+    actor_manager.populate(5)
+
+
+
 if __name__ == '__main__':
-    if DEBUG_MODE: print("Entering DEBUG Mode for Front End Development.")
     app.run()
+
+
+
