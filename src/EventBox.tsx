@@ -120,8 +120,8 @@ function EventBox() {
 
             {/* Right Panel: Controls and Character List */}
             <div className="w-1/4 h-full p-4">
-                <div className="w-full h-full flex flex-col items-center justify-start">
-                    <h3 className="text-cyan-400 uppercase tracking-widest text-center mb-2">Crew Manifest</h3>
+                <div className="w-full h-full gap-2 flex flex-col items-center justify-start">
+                    <h3 className="text-cyan-400 uppercase tracking-widest text-center">Crew Manifest</h3>
                     <div className="w-full h-3/4 bg-black/50 characterList select-none">
                         {characterList.map((char) => (
                             <button key={char.id} id={char.id} className="text-white" onClick={() => openCharWindow(char)}>
@@ -138,10 +138,16 @@ function EventBox() {
                         </Draggable>
                     )}
 
+                    {/* Right Panel: Map */}
+                    <div className="w-full h-full flex flex-col bg-gray-900 border border-gray-700">
 
+                    </div>
                 </div>
+
             </div>
         </div>
+
+
     )
 }
 
