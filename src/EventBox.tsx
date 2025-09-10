@@ -63,7 +63,7 @@ function EventBox() {
             });
             hasStartedAmbience.current = true;
         }
-
+        let debug = false;
         try {
             const url = "http://127.0.0.1:5000/action"
             const audio = new Audio('src/assets/audio/click.mp3');
@@ -73,10 +73,12 @@ function EventBox() {
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
-            const json: { body: string; status: number } = await response.json();
+            const json: {
+                debug: boolean;
+                body: string; status: number } = await response.json();
             setDialogues(prev => [...prev, json.body]);
             const text = json.body;
-
+            debug = json.debug;
             // Generate TTS
             const tts_url = "http://127.0.0.1:5000/text_to_speech";
             const res = await fetch(tts_url, {
@@ -92,9 +94,11 @@ function EventBox() {
             const voiced_text = new Audio(voice_url);
             voiced_text.play().catch(err => console.error("Audio playback error:", err));
         } catch (error) {
-            const message = (error instanceof Error) ? error.message : "Unknown error";
-            console.error(message);
-            setDialogues(prev => [...prev, `[SYSTEM ERROR] Action failed: ${message}`]);
+            if(!debug) {
+                const message = (error instanceof Error) ? error.message : "Unknown error";
+                console.error(message);
+                setDialogues(prev => [...prev, `[SYSTEM ERROR] Action failed: ${message}`]);
+            }
         }
     }
 
@@ -108,7 +112,7 @@ function EventBox() {
                     </p>
                 ))}
                 <button type="button" onClick={runTurn}
-                        className="passTurn w-1/10 absolute right-5 bottom-5 flex justify-center items-center flex-col">
+                        className="passTurn w-1/10 fixed right-5 bottom-5 flex justify-center items-center flex-col">
                     <img className="w-1/5" src="src/assets/icons/arrow.svg" alt="Pass turn"/>
                     <span className="text-lg font-bold uppercase">Next</span>
                 </button>

@@ -4,7 +4,7 @@ import json
 import os
 import random
 import sys
-from uuid import UUID
+from uuid import UUID, uuid4
 
 # Death to windows
 
@@ -32,6 +32,9 @@ from openai import OpenAI
 from Methods.NameGenerator import NameGenerator
 from Methods.ActorManager import ActorManager
 
+# Globals
+DEBUG_MODE: bool = True
+
 app = Flask(__name__)
 
 CORS(app, resources={r"/action": {"origins": "http://localhost:5173"},
@@ -42,23 +45,25 @@ dotenv.load_dotenv(dotenv.find_dotenv())
 
 client = OpenAI()
 
-actor_manager: ActorManager = ActorManager()
 # In order to make the simulation, we need to populate
 # Our manager with NPCS
-actor_manager.populate(5)
-action_history: deque = deque(maxlen=100)
+if not DEBUG_MODE:
+    actor_manager: ActorManager = ActorManager()
+    actor_manager.populate(5)
+    action_history: deque = deque(maxlen=100)
 
 
 def perform_random_act():
     act_of_random: str = actor_manager.act_randomly(action_history=list(action_history))
     action_history.append(act_of_random)
-    return jsonify(body=act_of_random, status=200)
+    return act_of_random
 
 
 @app.route('/action')
 def interactions():
+    if DEBUG_MODE: return {"debug": True, "body":"[PLACEHOLDER]"}, 200
     try:
-        return perform_random_act()
+        if DEBUG_MODE: return {"debug": False, "body":perform_random_act()}, 200
     except Exception as e:
         traceback.print_exc()
         return jsonify(error=str(e)), 500
@@ -66,6 +71,7 @@ def interactions():
 
 @app.route('/text_to_speech', methods=['POST'])
 def text_to_speech(translate: bool = False):
+    if DEBUG_MODE: return None
 
     data = request.get_json()
     text = data.get('text', '')
@@ -93,6 +99,11 @@ def text_to_speech(translate: bool = False):
 
 @app.route('/get_actors')
 def get_list_of_crewmembers():
+    if DEBUG_MODE:
+        return jsonify({
+            "body": {str(uuid4()): "John Doe" for i in range(10)},
+            "status": 200
+        })
     try:
         return actor_manager.get_actor_list()
     except Exception as e:
@@ -102,6 +113,14 @@ def get_list_of_crewmembers():
 
 @app.route('/get_character_details', methods=['POST'])
 def get_character_details():
+    if DEBUG_MODE:
+        return jsonify({
+            "personality": ["Very cool guy"],
+            "backstory": "Used to make pizzas",
+            "wants": ["Icecream"],
+            "fears": ["Icebeam"]
+        })
+
     """
     Fetches all key narrative attributes for a given character ID.
     """
@@ -131,4 +150,5 @@ def get_character_details():
         return jsonify(error=str(e)), 500
 
 if __name__ == '__main__':
+    if DEBUG_MODE: print("Entering DEBUG Mode for Front End Development.")
     app.run()
