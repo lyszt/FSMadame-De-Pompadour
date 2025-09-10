@@ -6,6 +6,8 @@ import random
 import sys
 from uuid import UUID, uuid4
 
+from Methods.MapStructures import MapStructure
+
 # Death to windows
 
 if sys.platform == 'win32':
@@ -47,11 +49,13 @@ client = OpenAI()
 
 # In order to make the simulation, we need to populate
 # Our manager with NPCS
+
+# GAME STRUCTURES AND MANAGERS
 if not DEBUG_MODE:
     actor_manager: ActorManager = ActorManager()
     actor_manager.populate(5)
     action_history: deque = deque(maxlen=100)
-
+game_map: MapStructure = MapStructure(4)
 
 def perform_random_act():
     act_of_random: str = actor_manager.act_randomly(action_history=list(action_history))
