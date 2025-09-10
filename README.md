@@ -4,6 +4,8 @@
 
 FS Madame de Pompadour is a text-based narrative simulator that creates dynamic and unpredictable stories set in a sci-fi universe. By clicking "Next," you advance the simulation one turn at a time, watching as a cast of characters interact with each other based on a combination of predefined behaviors and generative AI.
 
+<img width="1080" height="722" alt="image" src="https://github.com/user-attachments/assets/6baf6f75-7e56-4d96-83ef-57443bdc2064" />
+
 The goal is to create a "digital terrarium" where complex social dynamics and unexpected events emerge from simple rules and the creative power of AI.
 
 ``` 
@@ -37,6 +39,9 @@ Crewman Mohammed, seeing the tension around Captain Pepillo, quietly approached 
 ```
 <img width="580" height="361" alt="image" src="https://github.com/user-attachments/assets/3978819b-118a-40e5-b5b7-6e3c298c22b9" />
 
+
+<img width="320" height="249" alt="image" src="https://github.com/user-attachments/assets/abc0e110-2c49-4047-b458-9c1dc6d60b72" />
+
 In this demonstration snapshot from the FS Madame de Pompadour simulation, we observe a complex and dynamic social ecosystem in motion. The system showcases its capacity for generating emergent narrative not through pre-scripted events, but by allowing independent agents to interact, creating a rich and believable tapestry of life on the lower decks.
 
 The simulation ignites with a clear catalyst: a high-ranking authority figure, Captain Pepillo, introducing immediate, high-stakes tension through direct orders. This "command cascade" becomes the central gravitational point for the entire social ecosystem. Notice how his demands don't just trigger individual character scripts, but instead initiate a unified, high-pressure event. This showcases the system's new focus on hierarchical structure, where the actions of a single agent can dictate the focus, mood, and strategic objective for every other character in the shared environment.
@@ -47,6 +52,9 @@ This brief window reveals a powerful engine for emergent storytelling that seaml
 
 
 FS Madame de Pompadour is built on a modern, decoupled web architecture, separating the backend simulation engine from the frontend user interface for modularity and performance.
+
+
+![Uploading image.png…]()
 
 ### Backend: Python, Flask, and Gemini
 
