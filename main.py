@@ -1,8 +1,13 @@
 import asyncio
+import io
+import json
 import os
+import random
 import sys
 from uuid import UUID, uuid4
 from multiprocessing import Process
+
+from Resources.MapStructures import MapStructure
 
 # Death to windows
 
@@ -12,16 +17,23 @@ if sys.platform == 'win32':
     from pydub.utils import which
 
     AudioSegment.converter = which("ffmpeg") or "C:/ffmpeg/bin/ffmpeg.exe"
+import io
+import sys
 import traceback
+import typing
+import tempfile
 from collections import deque
+from gtts import gTTS
 import dotenv
+from Resources.Crewman import Crewman
 # Essentials
-from flask import Flask, jsonify, send_file, request
-from flask_cors import CORS
+from flask import Flask, render_template, jsonify, send_file, request
+from flask_cors import CORS, cross_origin
 from googletrans import Translator
 from openai import OpenAI
-# Custom Methods
-from Methods.ActorManager import ActorManager
+# Custom Resources
+from Resources.NameGenerator import NameGenerator
+from Resources.ActorManager import ActorManager
 
 # Globals
 DEBUG_MODE: bool = False

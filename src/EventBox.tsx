@@ -155,8 +155,8 @@ function EventBox() {
                     )}
 
                         {/* Right Panel: Map */}
-                        <div className="w-full h-full overflow-hidden relativebg-gray-900 border border-gray-700">
-                            <img src={mapImageUrl} alt={"Game map"}/>
+                        <div className="w-full h-full overflow-hidden relativebg-gray-900 border  p-[5%] border-gray-700">
+                            <img className="" src={mapImageUrl} alt={"Game map"}/>
                         </div>
                 </div>
 

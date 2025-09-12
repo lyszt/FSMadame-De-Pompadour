@@ -157,7 +157,7 @@ class Captain(Humanoid):
     def idle_action(self) -> str:
         """Pulls a random, command-themed action from a file."""
         try:
-            with open("Methods/Datasets/captain_actions.txt", "r", encoding="utf-8") as f:
+            with open("Resources/Datasets/captain_actions.txt", "r", encoding="utf-8") as f:
                 action_list = [line.strip() for line in f if line.strip()]
             return random.choice(action_list) if action_list else "stands at ease"
         except FileNotFoundError:
@@ -167,7 +167,7 @@ class Captain(Humanoid):
     def against_another_neutral(self) -> str:
         """Pulls a random neutral action targeting another character."""
         try:
-            with open("Methods/Datasets/captain_target_actions_neutral.txt", "r", encoding="utf-8") as f:
+            with open("Resources/Datasets/captain_target_actions_neutral.txt", "r", encoding="utf-8") as f:
                 action_list = [line.strip() for line in f if line.strip()]
             return random.choice(action_list) if action_list else "glances at"
         except FileNotFoundError:

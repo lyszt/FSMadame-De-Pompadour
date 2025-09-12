@@ -89,7 +89,7 @@ class Doctor(Humanoid):
     def idle_action(self) -> str:
         """Pulls a random, medical-themed action from a file."""
         try:
-            with open("Methods/Datasets/doctor_actions.txt", "r", encoding="utf-8") as f:
+            with open("Resources/Datasets/doctor_actions.txt", "r", encoding="utf-8") as f:
                 action_list = [line.strip() for line in f if line.strip()]
             return random.choice(action_list)
         except FileNotFoundError:
@@ -98,7 +98,7 @@ class Doctor(Humanoid):
     def against_another_neutral(self) -> str:
         """Pulls a random neutral action targeting another character."""
         try:
-            with open("Methods/Datasets/doctor_target_actions_neutral.txt", "r", encoding="utf-8") as f:
+            with open("Resources/Datasets/doctor_target_actions_neutral.txt", "r", encoding="utf-8") as f:
                 action_list = [line.strip() for line in f if line.strip()]
             return random.choice(action_list)
         except FileNotFoundError:

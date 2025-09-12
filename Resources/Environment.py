@@ -122,7 +122,7 @@ class Environment:
                 return f"{target.name} feels a strange influence but manages to resist any change."
 
         try:
-            with open("Methods/Datasets/personality_traits.txt", "r") as f:
+            with open("Resources/Datasets/personality_traits.txt", "r") as f:
                 personality_list = [line.strip() for line in f if line.strip()]
 
             new_personality = []

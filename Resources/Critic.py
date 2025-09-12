@@ -27,7 +27,7 @@ class Critic:
             personality (str): A description of the critic's personality and artistic tastes.
             client (genai.Client): The initialized client for the AI model.
         """
-        with open("Methods/Datasets/personality_traits.txt", "r") as f:
+        with open("Resources/Datasets/personality_traits.txt", "r") as f:
             personality_list = [line.strip() for line in f if line.strip()]
         self.personality = []
         self.score_history = []

@@ -40,7 +40,7 @@ class Humanoid(ABC):
         self.fears = []
         self.backstory = ""
 
-        with open("Methods/Datasets/personality_traits.txt", "r") as f:
+        with open("Resources/Datasets/personality_traits.txt", "r") as f:
             personality_list = [line.strip() for line in f if line.strip()]
             self.personality = random.sample(personality_list, k=3)
 
@@ -81,7 +81,7 @@ class Humanoid(ABC):
         planet_of_origin = planet_parts[0] if planet_parts else "an unknown world"
 
 
-        with open("Methods/Datasets/patronymes.csv", "r", encoding="utf-8") as f:
+        with open("Resources/Datasets/patronymes.csv", "r", encoding="utf-8") as f:
             reader = csv.reader(f)
             family_names = [row[0].strip() for row in reader]
             next(reader, None)
