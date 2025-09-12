@@ -1,6 +1,7 @@
 import random
 import inspect
-from typing import Optional, Callable
+import json
+from typing import Optional, Callable, List
 
 # Ensure you have the necessary libraries installed:
 # pip install google-generativeai pydantic
@@ -9,7 +10,8 @@ from pydantic import BaseModel, Field
 
 # Assuming these are your local project files
 from .Humanoid import Humanoid
-
+from .Inventory import Inventory
+from .Ship import Ship
 
 # Pydantic model to define the structure for the AI's JSON output.
 class Command(BaseModel):

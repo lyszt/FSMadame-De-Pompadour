@@ -4,8 +4,11 @@ from multiprocessing import Queue, Process
 from pathlib import Path
 from flask import jsonify
 import random
+import traceback
 
-from Methods.System.Ship.Ship import Ship
+from gpt4all import GPT4All
+
+from .Ship import Ship
 from .Captain import Captain
 from .Environment import Environment
 from .Crewman import Crewman
@@ -13,6 +16,7 @@ from .Doctor import Doctor
 from .Lieutenant import Lieutenant
 from .NameGenerator import NameGenerator
 from .Humanoid import Humanoid
+from .MapStructures import MapStructure, MapInteraction
 import traceback
 from gpt4all import GPT4All
 
