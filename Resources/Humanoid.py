@@ -33,7 +33,6 @@ class Humanoid(ABC):
         self.inventory: Inventory = Inventory()
         self.tasks = []
         self.actor_manager = actor_manager
-        # mini_llm is just a reference, not a GPT4All instance
         self.model = mini_llm
 
         self.wants = []
@@ -146,7 +145,6 @@ class Humanoid(ABC):
             print(f"Fears/Wants decision from AI: {response.text}")
             schema = FearsAndWantsSchema.model_validate_json(response.text)
 
-            # Use the validated data
             self.wants.extend(schema.wants)
             self.fears.extend(schema.fears)
 
@@ -156,8 +154,6 @@ class Humanoid(ABC):
             self.wants.append("Survive the day")
             self.fears.append("The unknown")
 
-        # --- The rest of your function remains the same ---
-        # Minimal dedupe & limit
         self.wants = list(dict.fromkeys(self.wants))[:6]
         self.fears = list(dict.fromkeys(self.fears))[:6]
 
